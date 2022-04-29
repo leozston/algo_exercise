@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3e48ed64-3899-4d2f-8848-80647a60c8e2" name="Changes" comment="" />
+    <list default="true" id="3e48ed64-3899-4d2f-8848-80647a60c8e2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/BackTrack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/BaseAlgo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/DynamicProgram.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/HalfSearch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/HotUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/LinkedNodeStruct.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hot/TreeStruct.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,17 +32,24 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/algo/src" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.jsOptions" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/algo/src" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Unnamed">
     <configuration name="BaseAlgo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="18 (2)" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="hot.BaseAlgo" />
-      <module name="algo_exercise" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="hot.*" />
@@ -43,6 +60,17 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="18 (2)" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Unnamed" />
+      <item itemvalue="Application.BaseAlgo" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.BaseAlgo" />
@@ -58,11 +86,24 @@
       <option name="presentableId" value="Default" />
       <updated>1651254252009</updated>
       <workItem from="1651254255054" duration="469000" />
+      <workItem from="1651254924709" duration="542000" />
+      <workItem from="1651255539786" duration="612000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
