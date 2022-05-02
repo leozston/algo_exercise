@@ -74,9 +74,14 @@ public class BaseAlgo {
 
 //        test 75
 //        int[] nums = {2,0,2,1,1,0};
-        int[] nums = {2,0,2,1,1,0};
-        sortColors(nums);
-        printArray(nums);
+//        int[] nums = {2,0,2,1,1,0};
+//        sortColors(nums);
+//        printArray(nums);
+
+//        test 121
+        int[] nums = {7,1,5,3,6,4};
+        int r = maxProfit(nums);
+        System.out.println(r);
     }
 
     /**
@@ -327,7 +332,6 @@ public class BaseAlgo {
                 matrix[j][len - i - 1] = temp;
             }
         }
-        System.out.println("a");
     }
 
     /**
@@ -440,5 +444,22 @@ public class BaseAlgo {
      * */
     public String minWindow(String s, String t) {
         return null;
+    }
+
+    /**
+     * LeetCode 121
+     * 股票的题目，LeetCode中股票题目最少有4中类型，都需要掌握，这是最简单的一种类型
+     * */
+    public static int maxProfit(int[] prices) {
+        if (prices.length < 2) {
+            return 0;
+        }
+        int min = prices[0];
+        int maxValue = Integer.MIN_VALUE;
+        for (int i = 1; i < prices.length; i++) {
+            maxValue = Math.max(prices[i] - min, maxValue);
+            min = Math.min(prices[i], min);
+        }
+        return Math.max(maxValue, 0);
     }
 }

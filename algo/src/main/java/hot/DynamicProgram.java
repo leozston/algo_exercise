@@ -1,5 +1,7 @@
 package hot;
 
+import java.util.*;
+
 /**
  * @description: 动态规划
  * @author: longlonglv
@@ -33,10 +35,38 @@ public class DynamicProgram {
 //        System.out.println(r);
 
 //        test 72
-        String word1 = "horse";
-        String word2 = "ros";
-        int r = minDistance(word1, word2);
-        System.out.println(r);
+//        String word1 = "horse";
+//        String word2 = "ros";
+//        int r = minDistance(word1, word2);
+//        System.out.println(r);
+
+//        test 128
+//        int[] nums = {100,4,200,1,3,2};
+//        int r = longestConsecutive(nums);
+//        System.out.println(r);
+
+//        test 136
+//        int[] nums = {4,1,2,1,2};
+//        int r = singleNumber(nums);
+//        System.out.println(r);
+
+//        test 169
+//        int[] nums = {2,2,1,1,1,2,2};
+//        int r = majorityElement(nums);
+//        System.out.println(r);
+
+//        test 300
+//        int[] nums = {10,9,2,5,3,7,101,18};
+//        int r = lengthOfLIS(nums);
+//        System.out.println(r);
+
+//        test 139
+//        String s = "leetcode";
+//        List<String> wordDict = new ArrayList<>();
+//        wordDict.add("leet");
+//        wordDict.add("code");
+//        boolean r = wordBreak(s, wordDict);
+//        System.out.println(r);
     }
 
     /**
@@ -181,4 +211,124 @@ public class DynamicProgram {
         }
         return nums[word1.length()][word2.length()];
     }
+
+    /**
+     * LeetCode 300
+     * 很常见的一个动态规划问题
+     * */
+    public static int lengthOfLIS(int[] nums) {
+        int[] result = new int[nums.length];
+        result[0] = 1;
+        int maxLIS = 1;
+        for (int i = 1; i < nums.length; i++) {
+            int temp = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[j] < nums[i]) {
+                    temp = Math.max(result[j] + 1, temp);
+                }
+            }
+            result[i] = temp;
+            maxLIS = Math.max(temp, maxLIS);
+        }
+
+        return maxLIS;
+    }
+
+
+    /**
+     * LeetCode 128
+     * 一个技巧题
+     * */
+    public static int longestConsecutive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            set.add(nums[i]);
+        }
+        int maxLen = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (set.contains(nums[i])) {
+                int curMaxLen = 0;
+                curMaxLen++;
+                int temp = nums[i];
+                set.remove(nums[i]);
+
+                int tempLeft = temp - 1;
+                int tempRight = temp + 1;
+                while (set.contains(tempLeft)) {
+                    curMaxLen++;
+                    set.remove(tempLeft);
+                    tempLeft--;
+                }
+                while (set.contains(tempRight)) {
+                    curMaxLen++;
+                    set.remove(tempRight);
+                    tempRight++;
+                }
+                maxLen = Math.max(maxLen, curMaxLen);
+            }
+        }
+        return maxLen;
+    }
+
+    /**
+     * LeetCode 169
+     * 过半数的常见做法
+     * */
+    public static int majorityElement(int[] nums) {
+        if (nums.length < 2) {
+            return nums[0];
+        }
+        int result = nums[0];
+        int times = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (result == nums[i]) {
+                times++;
+            } else {
+                if (times == 0) {
+                    result = nums[i];
+                    times = 1;
+                } else {
+                    times--;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * LeetCode 136
+     * 判断单个数常见做法，进行亦或
+     * */
+    public static int singleNumber(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int result = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            result ^= nums[i];
+        }
+        return result;
+    }
+
+    /**
+     * LeetCode 139
+     * 这是一个判断是否的问题，所以归纳为DP，如果题目若是输出所有的满足条件的切分，则为回溯问题
+     * */
+    public static boolean wordBreak(String s, List<String> wordDict) {
+        boolean[] nums = new boolean[s.length() + 1];
+        nums[0] = true;
+        Set<String> wordDictSet = new HashSet<>(wordDict);
+        for (int i = 1; i <= s.length(); i++) {
+            boolean temp = false;
+            for (int j = 0; j < i; j++) {
+                temp = nums[j] && wordDictSet.contains(s.substring(j, i));
+                if (temp) {
+                    break;
+                }
+            }
+            nums[i] = temp;
+        }
+        return nums[s.length()];
+    }
+
 }
