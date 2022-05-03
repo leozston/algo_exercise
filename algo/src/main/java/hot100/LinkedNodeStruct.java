@@ -1,8 +1,6 @@
-package hot;
+package hot100;
 
-import java.util.List;
-
-import static hot.HotUtils.*;
+import static hot100.HotUtils.*;
 
 /**
  * @description: 链表结构

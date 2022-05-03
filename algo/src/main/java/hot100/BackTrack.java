@@ -1,8 +1,8 @@
-package hot;
+package hot100;
 
 import java.util.*;
 
-import static hot.HotUtils.*;
+import static hot100.HotUtils.*;
 
 /**
  * @description: 回溯法
@@ -10,6 +10,7 @@ import static hot.HotUtils.*;
  * @date: 2022/4/29
  */
 public class BackTrack {
+    public static int findTargetSumWays = 0;
     public static void main(String[] args) {
         System.out.println("hello world");
 
@@ -42,12 +43,22 @@ public class BackTrack {
 //        System.out.println(r);
 
 //        test 200
-        char[][] nums = {{'1','1','1','1','0'},
-                {'1','1','0','1','0'},
-                {'1','1','0','0','0'},
-                {'0','0','0','0','0'}};
-        int r = numIslands(nums);
-        System.out.println(r);
+//        char[][] nums = {{'1','1','1','1','0'},
+//                {'1','1','0','1','0'},
+//                {'1','1','0','0','0'},
+//                {'0','0','0','0','0'}};
+//        int r = numIslands(nums);
+//        System.out.println(r);
+
+//        test 494
+//        int[] nums = {1,1,1,1,1};
+//        int r = findTargetSumWays(nums, 3);
+//        System.out.println(r);
+
+//        test 301
+        String s = "(a)())()";
+        List<String> r = removeInvalidParentheses(s);
+        printListString(r);
     }
 
     /**
@@ -282,6 +293,87 @@ public class BackTrack {
         if (j < grid[0].length - 1 && !used[i][j+1] && grid[i][j+1] == '1') {
             used[i][j+1] = true;
             numIslandsImpl(grid, used, i, j + 1);
+        }
+    }
+
+
+    /**
+     * LeetCode 494
+     * 回溯法
+     * */
+    public static int findTargetSumWays(int[] nums, int target) {
+        findTargetSumWays = 0;
+        findTargetSumWaysImpl(nums, target, 0);
+        return findTargetSumWays;
+    }
+    public static void findTargetSumWaysImpl(int[] nums, int target, int index) {
+        if (index == nums.length) {
+            if (target == 0) {
+                findTargetSumWays++;
+            }
+            return;
+        }
+        findTargetSumWaysImpl(nums, target + (-nums[index]), index+1);
+        findTargetSumWaysImpl(nums, target + nums[index], index+1);
+    }
+
+    /**
+     * LeetCode 301
+     * 这是一道稍难一点的回溯法，LeetCode中属于hard
+     * */
+    public static List<String> removeInvalidParentheses(String s) {
+//        首先计算出几个要删掉几个'('与几个')'，判断字符串中有几对括号要保留
+        int len = 0;
+        int delLen1 = 0;
+        int delLen2 = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                len++;
+            } else if (s.charAt(i) == ')'){
+                if (len > 0) {
+                    len--;
+                } else {
+                    delLen2++;
+                }
+            }
+        }
+        delLen1 = len;
+
+        List<String> result = new ArrayList<>();
+        removeInvalidParenthesesImpl(s, 0, 0, 0, delLen1, delLen2, 0, 0, result, "");
+        return result;
+    }
+
+    public static void removeInvalidParenthesesImpl(String s, int index, int hasLen1, int hasLen2, int targeLen1, int targetLen2, int len1, int len2, List<String> result, String cur) {
+        /**
+         * hasLen1:当前字符串中已经有的'('、hasLen2:当前字符串中已经有的')'
+         * targeLen1:需要删除的'('，取值不变、targeLen2:需要删除的')'，取值不变
+         * len1:当前字符串中已经删除的'(、len2:当前字符串中已经删除的')'
+         * */
+        if (len1 == targeLen1 && len2 == targetLen2 && index == s.length()) {
+//          这里不是很完美，ugly
+            if (!result.contains(cur)) {
+                result.add(cur);
+            }
+            return;
+        }
+        if (index >= s.length()) {
+            return;
+        }
+        if (len1 > targeLen1 || len2 > targetLen2) {
+            return;
+        }
+        if (hasLen1 < hasLen2) {
+            return;
+        }
+        if (s.charAt(index) == '(') {
+            removeInvalidParenthesesImpl(s, index + 1, hasLen1 + 1, hasLen2, targeLen1, targetLen2, len1, len2, result, cur + "(");
+            removeInvalidParenthesesImpl(s, index + 1, hasLen1, hasLen2, targeLen1, targetLen2, len1 + 1, len2, result, cur);
+        } else if (s.charAt(index) == ')') {
+            removeInvalidParenthesesImpl(s, index + 1, hasLen1, hasLen2 + 1, targeLen1, targetLen2, len1, len2, result, cur + ")");
+            removeInvalidParenthesesImpl(s, index + 1, hasLen1, hasLen2, targeLen1, targetLen2, len1, len2 + 1, result, cur);
+        } else {
+            removeInvalidParenthesesImpl(s, index + 1, hasLen1, hasLen2, targeLen1, targetLen2, len1, len2, result, cur + s.charAt(index));
         }
     }
 }

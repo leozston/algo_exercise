@@ -1,8 +1,8 @@
-package hot;
+package hot100;
 
 import java.util.*;
 
-import static hot.HotUtils.*;
+import static hot100.HotUtils.*;
 
 /**
  * @description: 树结构
@@ -25,7 +25,7 @@ class TreeNode {
 
 public class TreeStruct {
     public static int maxPathSumVar = Integer.MIN_VALUE;
-
+    public static int diameterOfBinaryTreeVar = 0;
     public static void main(String[] args) {
         System.out.println("hello world");
         int[] pre = {3,9,20,15,7};
@@ -53,9 +53,16 @@ public class TreeStruct {
 //        printArrayList(result);
 
 //        test 124
+//        maxPathSum(root);
+//        System.out.println(maxPathSumVar);
 
-        maxPathSum(root);
-        System.out.println(maxPathSumVar);
+//        test 543
+//        int r = diameterOfBinaryTree(root);
+//        System.out.println(r);
+
+//        test 26
+        TreeNode node = invertTree(root);
+        preorderTraverse(node);
     }
 
     /**
@@ -224,6 +231,56 @@ public class TreeStruct {
         maxPathSumVar = Math.max(maxPathSumVar, left + right + node.val);
 
         return Math.max(left, right) + node.val;
+    }
+
+
+    /**
+     * LeetCode 543
+     * 很经典的一道二叉树的题，和LeetCode 124 可以进行比较，很相似
+     * */
+    public static int diameterOfBinaryTree(TreeNode root) {
+        diameterOfBinaryTreeVar = 0;
+        diameterOfBinaryTreeImpl(root);
+//        注意，这里是路径长度，并不是节点长度，所以要减1
+        return diameterOfBinaryTreeVar - 1;
+    }
+    public static int diameterOfBinaryTreeImpl(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = diameterOfBinaryTreeImpl(root.left);
+        int right = diameterOfBinaryTreeImpl(root.right);
+
+        diameterOfBinaryTreeVar = Math.max(diameterOfBinaryTreeVar, left + right + 1);
+        return Math.max(left, right) + 1;
+    }
+
+    /**
+     * LeetCode 97
+     * TODO
+     * */
+
+
+    /**
+     * LeetCode 226
+     * 二叉树的基本操作
+     * */
+    public static TreeNode invertTree(TreeNode root) {
+        if (root == null) {
+            return root;
+        }
+        invertTreeImpl(root);
+        return root;
+    }
+    public static void invertTreeImpl(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        TreeNode node = root.left;
+        root.left = root.right;
+        root.right = node;
+        invertTreeImpl(root.left);
+        invertTreeImpl(root.right);
     }
 
 }

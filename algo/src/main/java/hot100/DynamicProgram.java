@@ -1,4 +1,4 @@
-package hot;
+package hot100;
 
 import java.util.*;
 
@@ -80,8 +80,17 @@ public class DynamicProgram {
 //        System.out.println(r);
 
 //        test 221
-        char[][] nums = {{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}};
-        int r = maximalSquare(nums);
+//        char[][] nums = {{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}};
+//        int r = maximalSquare(nums);
+//        System.out.println(r);
+
+//         test 322
+//        int[] nums = {1,2,5};
+//        int r = coinChange(nums, 11);
+//        System.out.println(r);
+
+//        test 279
+        int r = numSquares(12);
         System.out.println(r);
     }
 
@@ -413,5 +422,45 @@ public class DynamicProgram {
             }
         }
         return maxValue * maxValue;
+    }
+
+
+    /**
+     * LeetCode 279
+     * */
+    public static int numSquares(int n) {
+        int[] nums = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            nums[i] = i;
+        }
+        for (int i = 1; i <= n; i++) {
+            int temp = i;
+            for (int j = 0; j * j <= i; j++) {
+                temp = Math.min(nums[i - j * j] + 1, temp);
+            }
+            nums[i] = temp;
+        }
+        return nums[n];
+    }
+
+    /**
+     * LeetCode 322
+     * 比较常见的DP
+     * */
+    public static int coinChange(int[] coins, int amount) {
+        int[] result = new int[amount + 1];
+        for (int i = 1; i < amount + 1; i++) {
+            result[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 1; i <= amount; i++) {
+            int curMin = Integer.MAX_VALUE;
+            for (int j = 0; j < coins.length; j++) {
+                if (i - coins[j] >= 0 && result[i - coins[j]] != Integer.MAX_VALUE) {
+                    curMin = Math.min(curMin, result[i-coins[j]] + 1);
+                }
+            }
+            result[i] = curMin;
+        }
+        return result[amount] == Integer.MAX_VALUE ? -1 : result[amount];
     }
 }

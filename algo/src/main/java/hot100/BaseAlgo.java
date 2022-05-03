@@ -1,8 +1,8 @@
-package hot;
+package hot100;
 
 import java.util.*;
 
-import static hot.HotUtils.*;
+import static hot100.HotUtils.*;
 
 /**
  * @description:
@@ -84,8 +84,48 @@ public class BaseAlgo {
 //        System.out.println(r);
 
 //        test 215
-        int[] nums = {3,2,1,5,6,4};
-        int r = findKthLargest(nums, 2);
+//        int[] nums = {3,2,1,5,6,4};
+//        int r = findKthLargest(nums, 2);
+//        System.out.println(r);
+
+//        test 238
+//        int[] nums = {1,2,3,4};
+//        int[] r = productExceptSelf(nums);
+//        printArray(r);
+
+//        test 239
+//        int[] nums = {1,3,-1,-3,5,3,6,7};
+//        int[] r = maxSlidingWindow(nums, 3);
+//        printArray(r);
+
+//        test 347
+//        int[] nums = {1,1,1,2,2,3};
+//        int[] r = topKFrequent(nums, 2);
+//        printArray(r);
+
+//        test 448
+//        int[] nums = {4,3,2,7,8,2,3,1};
+//        List<Integer> r = findDisappearedNumbers(nums);
+//        printListInteger(r);
+
+//        test 581
+//        int[] nums = {2,6,4,8,10,9,15};
+//        int[] nums = {1,2,3,4};
+//        int r = findUnsortedSubarray(nums);
+//        System.out.println(r);
+
+//        test 283
+//        int[] nums = {0,1,0,3,12};
+//        moveZeroes(nums);
+//        printArray(nums);
+
+//        test 338
+//        int[] nums = countBits(5);
+//        printArray(nums);
+
+//        test 394
+        String s = "3[a]2[bc]";
+        String r = decodeString(s);
         System.out.println(r);
     }
 
@@ -504,5 +544,271 @@ public class BaseAlgo {
             swap(nums, low, high);
         }
         return low;
+    }
+
+    /**
+     * LeetCode 238
+     * easy
+     * */
+    public static int[] productExceptSelf(int[] nums) {
+        int[] leftToRight = new int[nums.length];
+        int[] rightToLeft = new int[nums.length];
+
+        leftToRight[0] = nums[0];
+        rightToLeft[nums.length - 1] = nums[nums.length - 1];
+        for (int i = 1; i < nums.length; i++) {
+            leftToRight[i] = leftToRight[i-1] * nums[i];
+        }
+        for (int i = nums.length - 2; i >= 0; i--) {
+            rightToLeft[i] = rightToLeft[i+1] * nums[i];
+        }
+
+        int[] result = new int[nums.length];
+        result[0] = rightToLeft[1];
+        result[nums.length - 1] = leftToRight[nums.length - 2];
+        for (int i = 1; i < nums.length - 1; i++) {
+            result[i] = leftToRight[i-1] * rightToLeft[i + 1];
+        }
+        return result;
+    }
+
+
+    /**
+     * LeetCode 239
+     * 很常见的题，难度hard
+     * */
+    public static int[] maxSlidingWindow(int[] nums, int k) {
+        LinkedList<Integer> queue = new LinkedList<>();
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < k; i++) {
+            if (queue.isEmpty()) {
+                queue.offer(i);
+            } else {
+                while (!queue.isEmpty() && nums[queue.peekLast()] < nums[i]) {
+                    queue.pollLast();
+                }
+                queue.offer(i);
+            }
+        }
+        result.add(queue.peek());
+
+        for (int i = k; i < nums.length; i++) {
+            while (!queue.isEmpty() && nums[queue.peekLast()] < nums[i]) {
+                queue.pollLast();
+            }
+            if (!queue.isEmpty() && (i - queue.peek()) >= k) {
+                queue.poll();
+            }
+            queue.offer(i);
+
+            result.add(queue.peek());
+        }
+        int[] values = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            values[i] = nums[result.get(i)];
+        }
+        return values;
+    }
+
+
+    /**
+     * LeetCode 83
+     * */
+    public static void moveZeroes(int[] nums) {
+        if (nums.length == 0 || nums.length == 1) {
+            return;
+        }
+
+        int zeroIndex = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != 0) {
+                swap(nums, i, zeroIndex);
+                zeroIndex++;
+            }
+        }
+    }
+
+
+    /**
+     * LeetCode 347
+     * 比较常规的一个题
+     * */
+    public static int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(nums[i])) {
+                int t = map.get(nums[i]);
+                map.put(nums[i], t + 1);
+            } else {
+                map.put(nums[i], 1);
+            }
+        }
+        PriorityQueue<Map.Entry<Integer, Integer>> queue = new PriorityQueue<>(new Comparator<Map.Entry<Integer, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                return o1.getValue() - o2.getValue();
+            }
+        });
+        for (Map.Entry<Integer, Integer> e : map.entrySet()) {
+            if (queue.size() < k) {
+                queue.offer(e);
+            } else {
+                if (queue.peek().getValue() < e.getValue()) {
+                    queue.poll();
+                    queue.offer(e);
+                }
+            }
+        }
+        int[] result = new int[queue.size()];
+        int index = 0;
+        while (!queue.isEmpty()){
+            result[index] = queue.poll().getKey();
+            index++;
+        }
+        return result;
+    }
+
+    /**
+     * LeetCode 448
+     * */
+    public static List<Integer> findDisappearedNumbers(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i + 1 && nums[nums[i] - 1] != nums[i]) {
+                swap(nums, i, nums[i] - 1);
+                i--;
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i + 1) {
+                result.add(i + 1);
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * LeetCode 461
+     * 二进制操作题
+     * TODO
+     * */
+    public static int hammingDistance(int x, int y) {
+        return 0;
+    }
+
+    /**
+     * LeetCode 581
+     * 规律题，找出最左最优的index即可
+     * */
+    public static int findUnsortedSubarray(int[] nums) {
+        if (nums.length == 0 || nums.length == 1) {
+            return 0;
+        }
+        int left = nums.length - 1;
+        int right = 0;
+
+        int minV = nums[nums.length - 1];
+        for (int i = nums.length - 2; i >= 0; i--) {
+            if (nums[i] > minV) {
+                left = i;
+            }
+            minV = Math.min(nums[i], minV);
+        }
+
+        int maxV = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] < maxV) {
+                right = i;
+            }
+            maxV = Math.max(maxV, nums[i]);
+        }
+        if (right < left) {
+            return 0;
+        }
+        return right - left + 1;
+    }
+
+    /**
+     * LeetCode 338
+     * 动态规划题（同样也可以用二进制的一般方法解）,用DP解，这个递推关系很难发现：分奇数与偶数
+     * 这应该是一个medium的题
+     * */
+    public static int[] countBits(int n) {
+        int[] nums = new int[n + 1];
+        if (n == 0) {
+            return nums;
+        } else if (n == 1) {
+            nums[1] = 1;
+            return nums;
+        }
+        nums[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            if (i % 2 == 0) {
+                nums[i] = nums[i / 2];
+            } else {
+                nums[i] = nums[i/2] + 1;
+            }
+        }
+        return nums;
+    }
+
+    /**
+     * LeetCode 394
+     * 技巧性很强，但面试中很容易出现的题
+     * */
+    public static String decodeString(String s) {
+        LinkedList<String> stack = new LinkedList<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                int[] intV = getNumberFromString(s, i);
+                stack.push(String.valueOf(intV[0]));
+                i = intV[1] - 1;
+            } else if (s.charAt(i) == '[') {
+                stack.push("[");
+            } else if (s.charAt(i) == ']') {
+                List<String> cur = new ArrayList<>();
+                while (!stack.isEmpty() && !stack.peek().equals("[")) {
+                    cur.add(stack.pop());
+                }
+                stack.pop(); // "["
+                String times = stack.pop();
+                String timesString = getTimesString(cur, Integer.parseInt(times));
+                stack.push(timesString);
+            } else {
+                stack.push(String.valueOf(s.charAt(i)));
+            }
+        }
+        if (stack.isEmpty()) {
+            return "";
+        } else {
+            List<String> cur = new ArrayList<>();
+            while (!stack.isEmpty()) {
+                cur.add(stack.pop());
+            }
+            return getTimesString(cur, 1);
+        }
+    }
+    public static int[] getNumberFromString(String s, int index) {
+        int i = index;
+        while (index < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+            i++;
+        }
+        int[] nums = new int[2];
+        int v = Integer.parseInt(s.substring(index, i));
+        nums[0] = v;
+        nums[1] = i;
+        return nums;
+    }
+    public static String getTimesString(List<String> l, int times) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = l.size() - 1; i >= 0; i--) {
+            sb.append(l.get(i));
+        }
+        String result = "";
+        for (int i = 0; i < times; i++) {
+            result = result + sb.toString();
+        }
+        return result;
     }
 }

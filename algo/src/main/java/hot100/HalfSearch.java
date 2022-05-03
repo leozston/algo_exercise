@@ -1,6 +1,6 @@
-package hot;
+package hot100;
 
-import static hot.HotUtils.*;
+import static hot100.HotUtils.*;
 
 /**
  * @description:
@@ -19,9 +19,19 @@ public class HalfSearch {
 //        System.out.println(index);
 
 //        test 34
-        int[] nums = {5,7,7,8,8,10};
-        int[] result = searchRange(nums, 8);
-        printArray(result);
+//        int[] nums = {5,7,7,8,8,10};
+//        int[] result = searchRange(nums, 8);
+//        printArray(result);
+
+//        test 240
+//        int[][] nums = {{1,4,7,11,15},{2,5,8,12,19},{3,6,9,16,22},{10,13,14,17,24},{18,21,23,26,30}};
+//        boolean r = searchMatrix(nums, 5);
+//        System.out.println(r);
+
+//        test 287
+        int[] nums = {1,3,4,2,2};
+        int r = findDuplicate(nums);
+        System.out.println(r);
     }
 
     /**
@@ -127,4 +137,55 @@ public class HalfSearch {
         return result;
     }
 
+
+    /**
+     * LeetCode 240
+     * 折半查找的变形题，折半查找还有很多其他的变形题，需要掌握
+     * */
+    public static boolean searchMatrix(int[][] matrix, int target) {
+        int row = matrix.length;
+        int column = matrix[0].length;
+
+        int i = 0;
+        int j = column - 1;
+        while (i < row && j >= 0) {
+            if (matrix[i][j] == target) {
+                return true;
+            } else if (matrix[i][j] > target) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * LeetCode 287
+     * */
+    public static int findDuplicate(int[] nums) {
+        int low = 1;
+        int high = nums.length;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            int number = findDuplicateNum(nums, low, mid);
+            if (number > (mid - low + 1)) {
+                high = mid;
+            } else if (number == mid - low + 1) {
+                low = mid + 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+    public static int findDuplicateNum(int[] nums, int low, int high) {
+        int number = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] >= low && nums[i] <= high) {
+                number++;
+            }
+        }
+        return number;
+    }
 }

@@ -1,4 +1,4 @@
-package hot;
+package hot100;
 
 import java.util.*;
 
