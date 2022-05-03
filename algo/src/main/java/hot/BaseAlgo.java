@@ -79,8 +79,13 @@ public class BaseAlgo {
 //        printArray(nums);
 
 //        test 121
-        int[] nums = {7,1,5,3,6,4};
-        int r = maxProfit(nums);
+//        int[] nums = {7,1,5,3,6,4};
+//        int r = maxProfit(nums);
+//        System.out.println(r);
+
+//        test 215
+        int[] nums = {3,2,1,5,6,4};
+        int r = findKthLargest(nums, 2);
         System.out.println(r);
     }
 
@@ -461,5 +466,43 @@ public class BaseAlgo {
             min = Math.min(prices[i], min);
         }
         return Math.max(maxValue, 0);
+    }
+
+    /**
+     * LeetCode 215
+     * 常见的题目，注意时间复杂度是O(n)
+     * */
+    public static int findKthLargest(int[] nums, int k) {
+        if (nums.length < k) {
+            return -1;
+        }
+        k = nums.length - k;
+        return findKthLargestImpl(nums, k, 0, nums.length - 1);
+    }
+    public static int findKthLargestImpl(int[] nums, int k, int low, int high) {
+        int index = findQsortIndex(nums, low, high);
+        if (index == k) {
+            return nums[index];
+        } else if (index < k) {
+            return findKthLargestImpl(nums, k,index + 1, high);
+        } else {
+            return findKthLargestImpl(nums, k, low, index-1);
+        }
+    }
+
+    public static int findQsortIndex(int[] nums, int low, int high) {
+        int temp = nums[high];
+        while (low < high) {
+            while (low < high && nums[low] <= temp) {
+                low++;
+            }
+            swap(nums, low, high);
+
+            while (low < high && nums[high] >= temp) {
+                high--;
+            }
+            swap(nums, low, high);
+        }
+        return low;
     }
 }

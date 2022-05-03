@@ -67,6 +67,22 @@ public class DynamicProgram {
 //        wordDict.add("code");
 //        boolean r = wordBreak(s, wordDict);
 //        System.out.println(r);
+
+//        test 152
+//        int[] nums = {2,3,-2,4};
+//        int[] nums = {-4, -3, -2};
+//        int r = maxProduct(nums);
+//        System.out.println(r);
+
+//        test 198
+//        int[] nums = {1,2,3,1};
+//        int r = rob(nums);
+//        System.out.println(r);
+
+//        test 221
+        char[][] nums = {{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}};
+        int r = maximalSquare(nums);
+        System.out.println(r);
     }
 
     /**
@@ -331,4 +347,71 @@ public class DynamicProgram {
         return nums[s.length()];
     }
 
+
+    /**
+     * LeetCode 152
+     * 典型的动态规划法，和最大连续子数组和一块思考
+     * */
+    public static int maxProduct(int[] nums) {
+        if (nums.length < 2) {
+            return nums[0];
+        }
+        int globalMax = nums[0];
+        int localMax = nums[0];
+        int localMin = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+            globalMax = Math.max(Math.max(Math.max(nums[i], localMax * nums[i]), localMin * nums[i]), globalMax);
+            int tempLocalMax = Math.max(Math.max(nums[i], localMax * nums[i]), localMin * nums[i]);
+            localMin = Math.min(Math.min(nums[i], localMax * nums[i]), localMin * nums[i]);
+            localMax = tempLocalMax;
+        }
+        return globalMax;
+    }
+
+    /**
+     * LeetCode 198
+     * LeetCode中至少有三种类型的打家劫舍，都要掌握，这是最简单的一种
+     * */
+    public static int rob(int[] nums) {
+        if (nums.length < 2) {
+            return nums[0];
+        }
+        int[] result = new int[nums.length];
+        result[0] = nums[0];
+        result[1] = Math.max(nums[0], nums[1]);
+
+        for (int i = 2; i < nums.length; i++) {
+            result[i] = Math.max(result[i-2] + nums[i], result[i-1]);
+        }
+        return result[nums.length - 1];
+    }
+
+    /**
+     * LeetCode 221
+     * 几何中的DP，主要是找递推关系:
+     * Math.min(Math.min(nums[i - 1][j - 1], nums[i - 1][j]), Math.min(nums[i - 1][j - 1], nums[i][j - 1])) + 1
+     * */
+    public static int maximalSquare(char[][] matrix) {
+        int maxValue = 0;
+        int[][] nums = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == '1') {
+                    nums[i][j] = 1;
+                    maxValue = 1;
+                }
+            }
+        }
+
+        for (int i = 1; i < matrix.length; i++) {
+            for (int j = 1; j < matrix[0].length; j++) {
+                if (matrix[i][j] == '1') {
+                    nums[i][j] = Math.min(Math.min(nums[i - 1][j - 1], nums[i - 1][j]), Math.min(nums[i - 1][j - 1], nums[i][j - 1])) + 1;
+                    maxValue = Math.max(maxValue, nums[i][j]);
+                }
+            }
+        }
+        return maxValue * maxValue;
+    }
 }

@@ -37,8 +37,16 @@ public class BackTrack {
 //        printArrayList(result);
 
 //        test 79
-        char[][] nums = {{'A','B','C','E'},{'S','F','C','S'}, {'A','D','E','E'}};
-        boolean r = exist(nums, "ABCCED");
+//        char[][] nums = {{'A','B','C','E'},{'S','F','C','S'}, {'A','D','E','E'}};
+//        boolean r = exist(nums, "ABCCED");
+//        System.out.println(r);
+
+//        test 200
+        char[][] nums = {{'1','1','1','1','0'},
+                {'1','1','0','1','0'},
+                {'1','1','0','0','0'},
+                {'0','0','0','0','0'}};
+        int r = numIslands(nums);
         System.out.println(r);
     }
 
@@ -240,4 +248,40 @@ public class BackTrack {
     }
 
 
+    /**
+     * LeetCode 200
+     * 比较经典的具有代表性的一道回溯法的题目
+     * */
+    public static int numIslands(char[][] grid) {
+        int numIslandsVar = 0;
+        boolean[][] used = new boolean[grid.length][grid[0].length];
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (!used[i][j] && grid[i][j] == '1') {
+                    used[i][j] = true;
+                    numIslandsImpl(grid, used, i, j);
+                    numIslandsVar++;
+                }
+            }
+        }
+        return numIslandsVar;
+    }
+    public static void numIslandsImpl(char[][] grid, boolean[][] used, int i, int j) {
+        if (i > 0 && !used[i-1][j] && grid[i-1][j] == '1') {
+            used[i-1][j] = true;
+            numIslandsImpl(grid, used, i - 1, j);
+        }
+        if (i < grid.length - 1 && !used[i + 1][j] && grid[i+1][j] == '1') {
+            used[i+1][j] = true;
+            numIslandsImpl(grid, used, i+1, j);
+        }
+        if (j > 0 && !used[i][j-1] && grid[i][j-1] == '1') {
+            used[i][j-1] = true;
+            numIslandsImpl(grid, used, i, j-1);
+        }
+        if (j < grid[0].length - 1 && !used[i][j+1] && grid[i][j+1] == '1') {
+            used[i][j+1] = true;
+            numIslandsImpl(grid, used, i, j + 1);
+        }
+    }
 }
