@@ -1,5 +1,7 @@
 package hot100;
 
+import java.util.List;
+
 import static hot100.HotUtils.*;
 
 /**
@@ -19,11 +21,13 @@ class ListNode {
 public class LinkedNodeStruct {
     public static void main(String[] args) {
         System.out.println("hello world");
-        ListNode l1 = new ListNode(3);
-        ListNode l2 = new ListNode(1);
+        ListNode l1 = new ListNode(1);
+        ListNode l2 = new ListNode(2);
         l1.next = l2;
-        ListNode l3 = new ListNode(5);
+        ListNode l3 = new ListNode(2);
         l2.next = l3;
+        ListNode l3_1 = new ListNode(1);
+        l3.next = l3_1;
 
         ListNode l4 = new ListNode(2);
         ListNode l5 = new ListNode(4);
@@ -57,8 +61,12 @@ public class LinkedNodeStruct {
 //        printLinkedNode(r1);
 
 //        test 206
-        ListNode t1 = reverseList(l1);
-        printLinkedNode(t1);
+//        ListNode t1 = reverseList(l1);
+//        printLinkedNode(t1);
+
+//        test 234
+        boolean r = isPalindrome(l1);
+        System.out.println(r);
     }
 
     /**
@@ -338,6 +346,37 @@ public class LinkedNodeStruct {
             head = next;
         }
         return pre.next;
+    }
+
+    /**
+     * LeetCode 234
+     * 链表升级题，首先要反转链表，然后在判断
+     * */
+    public static boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) {
+            return true;
+        }
+        ListNode l1 = head;
+        ListNode l2 = head;
+        while (l2.next != null && l2.next.next != null) {
+            l1 = l1.next;
+            l2 = l2.next.next;
+        }
+
+        ListNode l2_1 = l1.next;
+        l1.next = null;
+
+        l1 = head;
+
+        ListNode l2_2 = reverseList(l2_1);
+        while (l2_2 != null) {
+            if (l1.val != l2_2.val) {
+                return false;
+            }
+            l2_2 = l2_2.next;
+            l1 = l1.next;
+        }
+        return true;
     }
 }
 

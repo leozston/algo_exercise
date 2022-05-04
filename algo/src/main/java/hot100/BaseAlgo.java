@@ -10,6 +10,8 @@ import static hot100.HotUtils.*;
  * @date: 2022/4/29
  */
 public class BaseAlgo {
+    public static int pathSumVar = 0;
+
     public static void main(String[] args) {
         System.out.println("hello world");
 
@@ -124,9 +126,34 @@ public class BaseAlgo {
 //        printArray(nums);
 
 //        test 394
-        String s = "3[a]2[bc]";
-        String r = decodeString(s);
-        System.out.println(r);
+//        String s = "3[a]2[bc]";
+//        String r = decodeString(s);
+//        System.out.println(r);
+
+//        test 560
+//        int[] nums = {1,2,1,2,1};
+//        int r = subarraySum(nums, 3);
+//        System.out.println(r);
+
+//        test 461
+//        int r = hammingDistance(3,1);
+//        System.out.println(r);
+
+//        test 309
+//        int[] nums = {1,2,3,0,2};
+//        int r = maxProfitV3(nums);
+//        System.out.println(r);
+
+//        test 438
+//        String s = "cbaebabacd";
+//        String p = "abc";
+//        List<Integer> r = findAnagrams(s, p);
+//        printListInteger(r);
+
+//        test 739
+        int[] nums = {73,74,75,71,69,72,76,73};
+        int[] r = dailyTemperatures(nums);
+        printArray(r);
     }
 
     /**
@@ -508,6 +535,32 @@ public class BaseAlgo {
         return Math.max(maxValue, 0);
     }
 
+
+    /**
+     * LeetCode 309
+     * 这是买卖股票的第三种类型题，这题难度较大，LeetCode 中是medium，但个人认为应该大于medium
+     * 这是一个动态规划题，找到之间的依赖关系
+     * */
+    public static int maxProfitV3(int[] prices) {
+        /**
+         * a[] 持有股票当前最大收益
+         * b[] 无股票且处于冷静期最大收益
+         * c[] 无股票且处于非冷静期最大收益
+         * */
+        int[] a = new int[prices.length];
+        int[] b = new int[prices.length];
+        int[] c = new int[prices.length];
+
+        a[0] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            a[i] = Math.max(a[i - 1], c[i-1] - prices[i]);
+            b[i] = a[i-1] + prices[i];
+            c[i] = Math.max(b[i-1], c[i-1]);
+        }
+        return Math.max(Math.max(a[prices.length - 1], b[prices.length - 1]), c[prices.length - 1]);
+    }
+
+
     /**
      * LeetCode 215
      * 常见的题目，注意时间复杂度是O(n)
@@ -691,10 +744,15 @@ public class BaseAlgo {
     /**
      * LeetCode 461
      * 二进制操作题
-     * TODO
      * */
     public static int hammingDistance(int x, int y) {
-        return 0;
+        int xy = x ^ y;
+        int result = 0;
+        while (xy != 0) {
+            result += xy & 1;
+            xy = xy >> 1;
+        }
+        return result;
     }
 
     /**
@@ -811,4 +869,160 @@ public class BaseAlgo {
         }
         return result;
     }
+
+    /**
+     * LeetCode 560
+     * 这是一道使用前缀和的题
+     * */
+    public static int subarraySum(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        int result = 0;
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+
+            if (map.containsKey(sum - k)) {
+                result += map.get(sum - k);
+            }
+
+            if (map.containsKey(sum)) {
+                int temp = map.get(sum);
+                map.put(sum, temp + 1);
+            } else {
+                map.put(sum, 1);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * LeetCode 437
+     * 这是一道使用前缀和与树的遍历题，可以和LeetCode 560一块看
+     * */
+    public static int pathSum(TreeNode root, int targetSum) {
+        pathSumVar = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        pathSumImpl(root, targetSum, map, 0);
+        return pathSumVar;
+    }
+
+    public static void pathSumImpl(TreeNode root, int targetSum, Map<Integer, Integer> map, int sum) {
+        if (root == null) {
+            return;
+        }
+        sum += root.val;
+        if (map.containsKey(sum - targetSum)) {
+            pathSumVar += map.get(sum - targetSum);
+        }
+        if (map.containsKey(sum)) {
+            int temp = map.get(sum);
+            map.put(sum, temp + 1);
+        } else {
+            map.put(sum, 1);
+        }
+
+        pathSumImpl(root.left, targetSum, map, sum);
+        pathSumImpl(root.right, targetSum, map, sum);
+        int t = map.get(sum);
+        map.put(sum, t - 1);
+        sum = sum - root.val;
+    }
+
+
+    /**
+     * LeetCode 538
+     *
+     * */
+    public static List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        if (p.length() > s.length()) {
+            return result;
+        }
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < p.length(); i++) {
+            map.put(p.charAt(i), map.getOrDefault(p.charAt(i), 0) + 1);
+        }
+
+        int differNum = p.length();
+
+        for (int i = 0; i < p.length(); i++) {
+            Character c = s.charAt(i);
+            if (map.getOrDefault(c, 0) > 0) {
+                map.put(c, map.get(c) - 1);
+                differNum--;
+            } else {
+                map.put(c, map.getOrDefault(c, 0) - 1);
+                differNum++;
+            }
+        }
+
+        if (differNum == 0) {
+            result.add(0);
+        }
+        for (int i = p.length(); i < s.length(); i++) {
+            Character c = s.charAt(i);
+            if (map.getOrDefault(c, 0) > 0) {
+                map.put(c, map.get(c) - 1);
+                differNum--;
+            } else {
+                map.put(c, map.getOrDefault(c, 0) - 1);
+                differNum++;
+            }
+
+            c = s.charAt(i - p.length());
+            if (map.getOrDefault(c, 0) < 0) {
+                map.put(c, map.get(c) + 1);
+                differNum--;
+            } else {
+                map.put(c, map.getOrDefault(c, 0) + 1);
+                differNum++;
+            }
+            if (differNum == 0) {
+                result.add(i - p.length() + 1);
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * LeetCode 621
+     * 这是一道找规律的题目
+     * TODO
+     * */
+    public static int leastInterval(char[] tasks, int n) {
+        return 0;
+    }
+
+
+    /**
+     * LeetCode 739
+     * 需要利用一个栈，这种思想和滑动窗口取最大值挺相似，可以类比
+     * */
+    public static int[] dailyTemperatures(int[] temperatures) {
+        int[] result = new int[temperatures.length];
+        LinkedList<Integer> stack = new LinkedList<>();
+        if (temperatures.length == 0 || temperatures.length == 1) {
+            return result;
+        }
+        for (int i = 0; i < temperatures.length; i++) {
+            if (stack.isEmpty()) {
+                stack.push(i);
+            } else {
+                if (temperatures[stack.peek()] >= temperatures[i]) {
+                    stack.push(i);
+                } else {
+                    while (!stack.isEmpty() && temperatures[stack.peek()] < temperatures[i]) {
+                        int index = stack.pop();
+                        result[index] = i - index;
+                    }
+                    stack.push(i);
+                }
+            }
+        }
+        return result;
+    }
+
 }

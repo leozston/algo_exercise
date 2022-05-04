@@ -26,6 +26,9 @@ class TreeNode {
 public class TreeStruct {
     public static int maxPathSumVar = Integer.MIN_VALUE;
     public static int diameterOfBinaryTreeVar = 0;
+    public static TreeNode lowestCommonAncestorVar = null;
+    public static TreeNode pre = null;
+
     public static void main(String[] args) {
         System.out.println("hello world");
         int[] pre = {3,9,20,15,7};
@@ -203,11 +206,21 @@ public class TreeStruct {
 
     /**
      * LeetCode 114
-     * 技巧题，需要对遍历很深刻的理解
-     * TODO
+     * 需要对遍历很深刻的理解
      * */
     public static void flatten(TreeNode root) {
-
+        pre = null;
+        flattenImpl(root);
+    }
+    public static void flattenImpl(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        flattenImpl(node.right);
+        flattenImpl(node.left);
+        node.right = pre;
+        node.left = null;
+        pre = node;
     }
 
 
@@ -255,11 +268,6 @@ public class TreeStruct {
         return Math.max(left, right) + 1;
     }
 
-    /**
-     * LeetCode 97
-     * TODO
-     * */
-
 
     /**
      * LeetCode 226
@@ -283,4 +291,58 @@ public class TreeStruct {
         invertTreeImpl(root.right);
     }
 
+
+    /**
+     * LeetCode 236
+     * 这道题总体还是有一定的难度的，需要很清楚的理解遍历过程
+     * */
+    public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        lowestCommonAncestorVar = null;
+        lowestCommonAncestorHasNode(root, p, q);
+        return lowestCommonAncestorVar;
+    }
+
+    public static boolean lowestCommonAncestorHasNode(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return false;
+        }
+        boolean left = lowestCommonAncestorHasNode(root.left, p, q);
+        boolean right = lowestCommonAncestorHasNode(root.right, p, q);
+
+        if ((left && right) || ((root.val == p.val || root.val == q.val) && (left || right))) {
+            lowestCommonAncestorVar = root;
+        }
+        return (left || right) || (root.val == p.val || root.val == q.val);
+    }
+
+    /**
+     * LeetCode 617
+     * 二叉树的遍历题
+     * */
+    public static TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if (root1 == null) {
+            return root2;
+        }
+        if (root2 == null) {
+            return root1;
+        }
+
+        return mergeTreesImpl(root1, root2);
+    }
+    public static TreeNode mergeTreesImpl(TreeNode node1, TreeNode node2) {
+        if (node1 == null && node2 == null) {
+            return null;
+        }
+        if (node1 == null) {
+            return node2;
+        }
+        if (node2 == null) {
+            return node1;
+        }
+
+        TreeNode n = new TreeNode(node1.val + node2.val);
+        n.left = mergeTreesImpl(node1.left, node2.left);
+        n.right = mergeTreesImpl(node1.right, node2.right);
+        return n;
+    }
 }

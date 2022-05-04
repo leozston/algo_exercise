@@ -1,5 +1,6 @@
 package hot100;
 
+import javax.swing.*;
 import java.util.*;
 
 /**
@@ -90,7 +91,17 @@ public class DynamicProgram {
 //        System.out.println(r);
 
 //        test 279
-        int r = numSquares(12);
+//        int r = numSquares(12);
+//        System.out.println(r);
+
+//        test 416
+//        int[] nums = {1,5,11,5};
+//        boolean r = canPartition(nums);
+//        System.out.println(r);
+
+//        test 647
+        String s = "aaa";
+        int r = countSubstrings(s);
         System.out.println(r);
     }
 
@@ -396,6 +407,29 @@ public class DynamicProgram {
         return result[nums.length - 1];
     }
 
+
+    /**
+     * LeetCode 337
+     * 打家劫舍题型III，还是树的遍历，只不过遍历的时候，返回的值比一般的树的遍历稍显复杂，这里是一个数组
+     * */
+    public static int robV3(TreeNode root) {
+        int[] result = robV3Impl(root);
+        return Math.max(result[0], result[1]);
+    }
+
+    public static int[] robV3Impl(TreeNode node) {
+        if (node == null) {
+            int[] t = new int[2];
+            return t;
+        }
+        int[] left = robV3Impl(node.left);
+        int[] right = robV3Impl(node.right);
+        int selected = node.val + left[1] + right[1];
+        int notSelected = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        return new int[]{selected, notSelected};
+    }
+
+
     /**
      * LeetCode 221
      * 几何中的DP，主要是找递推关系:
@@ -462,5 +496,61 @@ public class DynamicProgram {
             result[i] = curMin;
         }
         return result[amount] == Integer.MAX_VALUE ? -1 : result[amount];
+    }
+
+
+    /**
+     * LeetCode 416
+     * 和0/1背包问题类似
+     * */
+    public static boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+        }
+        if (sum % 2 != 0) {
+            return false;
+        }
+
+        boolean[][] result = new boolean[sum/2 + 1][nums.length + 1];
+        result[0][0] = true;
+        for (int i = 1; i < sum / 2 + 1; i++) {
+            result[i][0] = false;
+        }
+        for (int i = 1; i < nums.length + 1; i++) {
+            result[0][i] = true;
+        }
+
+        for (int i = 1; i < sum / 2 + 1; i++) {
+            for (int j = 1; j < nums.length + 1; j++) {
+                if (nums[j - 1] > i) {
+                    result[i][j] = result[i][j-1];
+                } else {
+                    result[i][j] = result[i-nums[j - 1]][j-1] || result[i][j-1];
+                }
+            }
+        }
+        return result[sum/2][nums.length];
+    }
+
+    /**
+     * LeetCode 647
+     * LeetCode中关于回文串的题目很多，这是其中一道
+     * */
+    public static int countSubstrings(String s) {
+        boolean[][] result = new boolean[s.length() + 1][s.length() + 1];
+        for (int i = 0; i < s.length() + 1; i++) {
+            result[i][i] = true;
+        }
+        int num = 0;
+        for (int i = s.length() - 1; i > 0; i--) {
+            for (int j = i + 1; j < s.length() + 1; j++) {
+                result[i][j] = s.charAt(i-1) == s.charAt(j-1) && (j-i <2 || result[i+1][j-1]);
+                if (result[i][j]) {
+                    num++;
+                }
+            }
+        }
+        return num + s.length();
     }
 }
