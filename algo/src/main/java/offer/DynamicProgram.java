@@ -1,5 +1,7 @@
 package offer;
 
+import java.util.*;
+
 /**
  * @description:
  * @author: longlonglv
@@ -7,6 +9,16 @@ package offer;
  */
 public class DynamicProgram {
     public static void main(String[] args) {
+        PriorityQueue<Integer> q = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1 - o2;
+            }
+        });
+        q.offer(3);
+        q.offer(2);
+        q.offer(4);
+        System.out.println(q);
     }
 
     /**
@@ -114,4 +126,39 @@ public class DynamicProgram {
         }
         return re[s.length()][p.length()];
     }
+
+    /**
+     * offer 47
+     * */
+    public int maxValue(int[][] grid) {
+        int[][] result = new int[grid.length][grid[0].length];
+        result[0][0] = grid[0][0];
+        for (int i = 1; i < grid[0].length; i++) {
+            result[0][i] = result[0][i-1] + grid[0][i];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            result[i][0] = result[i-1][0] + grid[i][0];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            for (int j = 1; j < grid[0].length; j++) {
+                result[i][j] = grid[i][j] + Math.max(result[i-1][j], result[i][j-1]);
+            }
+        }
+        return result[grid.length - 1][grid[0].length - 1];
+    }
+
+    /**
+     * offer 42
+     * 比较典型的DP
+     * */
+    public int maxSubArray(int[] nums) {
+        int global = nums[0];
+        int local = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            global = Math.max(Math.max(local + nums[i], nums[i]), global);
+            local = Math.max(nums[i], local + nums[i]);
+        }
+        return global;
+    }
 }
+

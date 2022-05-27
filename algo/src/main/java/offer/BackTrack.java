@@ -1,5 +1,7 @@
 package offer;
 
+import java.util.*;
+
 /**
  * @description:
  * @author: longlonglv
@@ -7,7 +9,10 @@ package offer;
  */
 public class BackTrack {
     public static void main(String[] args) {
-
+        String s = "ab";
+        char c= 'd';
+        String d = s + c;
+        System.out.println(d);
     }
     /**
      * offer 12
@@ -117,5 +122,62 @@ public class BackTrack {
             x = x / 10;
         }
         return res;
+    }
+
+
+    /**
+     * offer 38
+     * */
+    public String[] permutation(String s) {
+        char[] chars = s.toCharArray();
+        Arrays.sort(chars);
+        List<String> result = new ArrayList<>();
+        boolean[] used = new boolean[s.length()];
+        permutationImpl(chars, 0, result, used, "");
+        String[] r = new String[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            r[i] = result.get(i);
+        }
+        return r;
+    }
+    public void permutationImpl(char[] chars, int index, List<String> list, boolean[] used, String temp) {
+        if (index == chars.length) {
+            list.add(temp);
+            return;
+        }
+        if (index > chars.length) {
+            return;
+        }
+        for (int i = 0; i < chars.length; i++) {
+            if (!used[i]) {
+                if (i == 0 || chars[i] != chars[i - 1] || (chars[i] == chars[i-1] && !used[i - 1])) {
+                    used[i] = true;
+                    permutationImpl(chars, index + 1, list, used, temp + chars[i]);
+                    used[i] = false;
+                }
+            }
+        }
+    }
+
+    /**
+     * offer 45
+     * */
+    public String minNumber(int[] nums) {
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        for (int i = 0; i < nums.length; i++) {
+            result.add(nums[i]);
+        }
+        Comparator<Integer> c = new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return (String.valueOf(o1) + String.valueOf(o2)).compareTo(String.valueOf(o2) + String.valueOf(o1));
+            }
+        };
+        Collections.sort(result, c);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < result.size(); i++) {
+            sb.append(result.get(i));
+        }
+        return sb.toString();
     }
 }
