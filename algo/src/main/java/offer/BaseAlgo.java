@@ -440,4 +440,128 @@ public class BaseAlgo {
         }
         return stack.isEmpty();
     }
+
+
+    /**
+     * offer 56-I
+     * */
+    public int[] singleNumbers(int[] nums) {
+        int r = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            r ^= nums[i];
+        }
+        int t = 1;
+        int index = 0;
+        while ((t & r) == 0) {
+            t = t << 1;
+            index++;
+        }
+
+        List<Integer> l1 = new ArrayList<>();
+        List<Integer> l2 = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if ((nums[i] & t) == 0) {
+                l1.add(nums[i]);
+            } else {
+                l2.add(nums[i]);
+            }
+        }
+
+        int t1 = 0;
+        int t2 = 0;
+        for (int i = 0;i < l1.size(); i++) {
+            t1 ^= l1.get(i);
+        }
+        for (int i = 0;i < l2.size(); i++){
+            t2 ^= l2.get(i);
+        }
+        int[] result = new int[2];
+        result[0] = t1;
+        result[1] = t2;
+        return result;
+    }
+
+    /**
+     * offer 56-II
+     * 与56-I相比，这是两种思路
+     * */
+    public int singleNumber(int[] nums) {
+        int[] r = new int[32];
+        for (int i = 0; i < nums.length; i++) {
+            int temp = nums[i];
+            for (int j = 0; j < 32; j++) {
+                /**
+                 * 注意：这里有个括号，否则会先算+
+                 * */
+                r[j] = r[j] + (temp & 1);
+                temp = temp >> 1;
+            }
+        }
+
+        int result = 0;
+        for (int i = 0; i < 32; i++) {
+            if (r[i] % 3 != 0) {
+                result += (int)Math.pow(2, i);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * offer 57-I
+     * 比较基础两数之和
+     * */
+    public int[] twoSum(int[] nums, int target) {
+        int[] r = new int[2];
+        r[0] = -1;
+        r[1] = -1;
+        int low = 0;
+        int high = nums.length - 1;
+        while (low < high) {
+            if ((nums[low] + nums[high]) == target) {
+                r[0] = nums[low];
+                r[1] = nums[high];
+                return r;
+            } else if ((nums[low] + nums[high]) > target) {
+                high--;
+            } else {
+                low++;
+            }
+        }
+        return r;
+    }
+
+    /**
+     * offer 57-II
+     * */
+    public int[][] findContinuousSequence(int target) {
+        int low = 1;
+        int high = 2;
+        int sum = 3;
+        List<int[]> list = new ArrayList<>();
+        while (high <= target && low < high) {
+            /**
+             * 注意：这里的low与high
+             * low：sum = sum - low; low++;
+             * high：high++; sum = sum + high;
+             * 顺序是反的
+             * */
+            if (sum == target) {
+                int[] cur = new int[high - low + 1];
+                for (int i = low; i <= high; i++) {
+                    cur[i-low] = i;
+                }
+                list.add(cur);
+                sum = sum - low;
+                low++;
+            } else if (sum > target) {
+                sum = sum - low;
+                low++;
+            } else {
+                high++;
+                sum = sum + high;
+            }
+        }
+        return list.toArray(new int[list.size()][]);
+    }
 }

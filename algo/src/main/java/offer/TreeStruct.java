@@ -288,4 +288,83 @@ public class TreeStruct {
         cur.remove(cur.size() - 1);
     }
 
+    /**
+     * offer 54
+     * 注意：这里是第k大，不是第k小
+     * */
+    public static int kthLargestVar = 0;
+    public static TreeNode kthLargestResult = null;
+    public int kthLargest(TreeNode root, int k) {
+        kthLargestVar = k;
+        kthLargestResult = null;
+        kthLargestImpl(root);
+        return kthLargestResult.val;
+    }
+    public void kthLargestImpl(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+
+        kthLargestImpl(node.right);
+        kthLargestVar--;
+        if (kthLargestVar == 0) {
+            kthLargestResult = node;
+            return;
+        }
+        kthLargestImpl(node.left);
+    }
+
+    /**
+     * offer 55-I
+     * */
+    public int maxDepth(TreeNode root) {
+        int r = maxDepthImpl(root);
+        return r;
+    }
+    public int maxDepthImpl(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        int left = maxDepthImpl(node.left);
+        int right = maxDepthImpl(node.right);
+        return Math.max(left, right) + 1;
+    }
+
+    /**
+     * offer 55-II
+     * */
+    public boolean isBalanced(TreeNode root) {
+        return isBalancedImpl(root) >= 0;
+    }
+    public int isBalancedImpl(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        int left = isBalancedImpl(node.left);
+        int right = isBalancedImpl(node.right);
+        if (left < 0 || right < 0) {
+            return -1;
+        }
+        if (Math.abs(left - right) > 1) {
+            return -1;
+        }
+        return Math.max(left, right) + 1;
+    }
+
+
+    /**
+     * 二叉搜索树
+     * */
+    public boolean isBalancedV1(TreeNode root) {
+        return isBalancedImplV1(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+    public boolean isBalancedImplV1(TreeNode node, int low, int high) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val < low || node.val > high) {
+            return false;
+        }
+        return isBalancedImplV1(node.left, low, node.val) && isBalancedImplV1(node.right, node.val, high);
+    }
 }

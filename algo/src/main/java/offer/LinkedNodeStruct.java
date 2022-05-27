@@ -138,6 +138,41 @@ public class LinkedNodeStruct {
     }
 
 
+    /**
+     * offer 52
+     * */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int len1 = 0;
+        int len2 = 0;
 
+        ListNode l1 = headA;
+        ListNode l2 = headB;
+        while (headA != null) {
+            headA = headA.next;
+            len1++;
+        }
+        while (headB != null) {
+            headB = headB.next;
+            len2++;
+        }
+        headA = l1;
+        headB = l2;
+        if (len1 > len2) {
+            while (len1 > len2) {
+                headA = headA.next;
+                len1--;
+            }
+        } else {
+            while (len2 > len1) {
+                headB = headB.next;
+                len2--;
+            }
+        }
+        while (headA != headB) {
+            headA = headA.next;
+            headB = headB.next;
+        }
+        return headA;
+    }
 }
 
