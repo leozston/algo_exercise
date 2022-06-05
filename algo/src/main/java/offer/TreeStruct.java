@@ -367,4 +367,54 @@ public class TreeStruct {
         }
         return isBalancedImplV1(node.left, low, node.val) && isBalancedImplV1(node.right, node.val, high);
     }
+
+    /**
+     * offer 68-I
+     * */
+    public static TreeNode lowestCommonAncestorVar = null;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        lowestCommonAncestorVar = null;
+        lowestCommonAncestorImpl(root, p.val, q.val);
+        return lowestCommonAncestorVar;
+    }
+    public void lowestCommonAncestorImpl(TreeNode node, int v1, int v2) {
+        if (node == null) {
+            return;
+        }
+        if ((node.val >= v1 && node.val <= v2) || (node.val <= v1 && node.val >= v2)) {
+            lowestCommonAncestorVar = node;
+            return;
+        }
+        if (lowestCommonAncestorVar == null) {
+            lowestCommonAncestorImpl(node.left, v1, v2);
+        }
+        if (lowestCommonAncestorVar == null) {
+            lowestCommonAncestorImpl(node.right, v1, v2);
+        }
+    }
+
+
+    /**
+     * offer 68-II
+     * */
+    public static TreeNode lowestCommonAncestorV2Var = null;
+    public TreeNode lowestCommonAncestorV2(TreeNode root, TreeNode p, TreeNode q) {
+        lowestCommonAncestorV2Var = null;
+        lowestCommonAncestorV2Impl(root, p, q);
+        return lowestCommonAncestorV2Var;
+    }
+
+    public boolean lowestCommonAncestorV2Impl(TreeNode node, TreeNode p, TreeNode q) {
+        if (node == null) {
+            return false;
+        }
+        boolean left = lowestCommonAncestorV2Impl(node.left, p, q);
+        boolean right = lowestCommonAncestorV2Impl(node.right, p, q);
+
+        if ((left && right) || ((left || right) && (node.val == p.val || node.val == q.val))) {
+            lowestCommonAncestorV2Var = node;
+        }
+
+        return (left || right || (node.val == p.val || node.val == q.val));
+    }
 }

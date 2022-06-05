@@ -21,9 +21,15 @@ public class BaseAlgo {
 //        int[] nums = {1,2,3,4};
 //        exchange(nums);
 
-        int[] nums = {3,2,1};
-        int[] r = getLeastNumbers(nums, 2);
-        printArray(r);
+//        int[] nums = {3,2,1};
+//        int[] r = getLeastNumbers(nums, 2);
+//        printArray(r);
+//        String s = "the sky is blue";
+//        String s1 = reverseWords(s);
+//        System.out.println(s1);
+
+//        int[] nums = new int[]{0};
+//        System.out.println(nums.length);
     }
 
     /**
@@ -443,6 +449,62 @@ public class BaseAlgo {
 
 
     /**
+     * offer 51
+     * */
+    public int reversePairs(int[] nums) {
+        int re = reversePairsImpl(nums, 0, nums.length - 1);
+        return re;
+    }
+    public int reversePairsImpl(int[] nums, int low, int high) {
+        if (low >= high) {
+            return 0;
+        }
+        int mid = (low + high) / 2;
+        int l = reversePairsImpl(nums, low, mid);
+        int r = reversePairsImpl(nums, mid + 1, high);
+//        这个判断可以提前结束，个人觉得倒不是很重要，但是在LeetCode里面会导致超时，稍微注意一下
+        if (nums[mid] < nums[mid+1]) {
+            return l + r;
+        }
+        int merge = reversePairsMerge(nums, low, mid, high);
+        return l + r + merge;
+    }
+    public int reversePairsMerge(int[] nums, int left, int mid, int right) {
+        int[] temp = new int[nums.length];
+        for (int i = left; i <= right; i++) {
+            temp[i] = nums[i];
+        }
+        int i = left;
+        int j = mid + 1;
+        int index = left;
+        int number = 0;
+        while (i <= mid || j <= right) {
+            // while (index <= right) {
+            if (i > mid) {
+                nums[index] = temp[j];
+                index++;
+                j++;
+            } else if (j > right) {
+                nums[index] = temp[i];
+                index++;
+                i++;
+            } else if (temp[i] <= temp[j]) {
+                nums[index] = temp[i];
+                index++;
+                i++;
+            } else {
+                nums[index] = temp[j];
+                index++;
+                j++;
+
+                number += mid - i + 1;
+            }
+        }
+        return number;
+    }
+
+
+    /**
      * offer 56-I
      * */
     public int[] singleNumbers(int[] nums) {
@@ -564,4 +626,221 @@ public class BaseAlgo {
         }
         return list.toArray(new int[list.size()][]);
     }
+
+
+    /**
+     * offer 58-I
+     * */
+    public static String reverseWords(String s) {
+        int low = 0;
+        int high = s.length() - 1;
+        while (low <= high && s.charAt(low) == ' ') {
+            low++;
+        }
+        while (low <= high && s.charAt(high) == ' ') {
+            high--;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        low--;
+        for (int i = low + 1; i <= high; i++) {
+            if (s.charAt(i) == ' ') {
+                String t = getReverseString(s, low + 1, i-1);
+                if (!t.equals("")) {
+                    sb.append(t);
+                    sb.append(" ");
+                }
+                low = i;
+            }
+        }
+        sb.append(getReverseString(s, low + 1, high));
+        return getReverseString(sb.toString(), 0, sb.length() - 1);
+
+    }
+
+    public static String getReverseString(String s, int low, int end) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = end; i >= low; i--) {
+            sb.append(s.charAt(i));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * offer 58-II
+     * */
+    public String reverseLeftWords(String s, int n) {
+        StringBuilder sb = new StringBuilder();
+        n = n % s.length();
+        for (int i = n; i < s.length(); i++) {
+            sb.append(s.charAt(i));
+        }
+        for (int i = 0; i < n; i++) {
+            sb.append(s.charAt(i));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * offer 59
+     * */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums.length == 0) {
+            return new int[0];
+        }
+        LinkedList<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < k; i++) {
+            while (!queue.isEmpty() && nums[queue.peekLast()] < nums[i]) {
+                queue.pollLast();
+            }
+            queue.offer(i);
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(queue.peek());
+
+        for (int i = k; i < nums.length; i++) {
+            while (!queue.isEmpty() && nums[queue.peekLast()] < nums[i]) {
+                queue.pollLast();
+            }
+            if (!queue.isEmpty() && i - queue.peek() >= k) {
+                queue.poll();
+            }
+            queue.offer(i);
+            list.add(queue.peek());
+        }
+
+        int[] re = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            re[i] = nums[list.get(i)];
+        }
+        return re;
+    }
+
+    /**
+     * offer 61
+     * */
+    public boolean isStraight(int[] nums) {
+        Arrays.sort(nums);
+        int num1 = 0;
+        int gap = 0;
+        int index = 0;
+        while (nums[index] == 0) {
+            num1++;
+            index++;
+        }
+
+        for (int i = index+1; i < nums.length; i++) {
+            int t = nums[i] - nums[i-1];
+            if (t <= 0) {
+                return false;
+            }
+            gap += t - 1;
+        }
+        if (num1 >= gap) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * offer 62
+     * */
+    public int lastRemaining(int n, int m) {
+        Set<Integer> set = new HashSet<>();
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = i;
+        }
+        int k = 0;
+        int index = 0;
+        while (set.size() < n-1) {
+            if (!set.contains(nums[index])) {
+                k++;
+                if (k == m) {
+                    set.add(nums[index]);
+                    k = 0;
+                }
+            }
+            index++;
+            index = index % n;
+        }
+        for (int i = 0; i < n; i++) {
+            if (!set.contains(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * offer 63
+     * */
+    public int maxProfit(int[] prices) {
+        int maxV = 0;
+        if (prices.length <= 1) {
+            return maxV;
+        }
+        int lowV = prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            maxV = Math.max(maxV, prices[i] - lowV);
+            lowV = Math.min(lowV, prices[i]);
+        }
+        return maxV;
+    }
+
+    /**
+     * offer 64
+     * 这种题意义性不是很大
+     * */
+    public int sumNums(int n) {
+        int[] nums = new int[]{0};
+        try {
+            return nums[n];
+        } catch (Exception e) {
+            return n + sumNums(n-1);
+        }
+    }
+
+    /**
+     * offer 65
+     * */
+    public int add(int a, int b) {
+        int t1 = a^b;
+        int t2 = a&b;
+        return t1 + (t2 << 1);
+    }
+
+    /**
+     * offer 66
+     * */
+    public int[] constructArr(int[] a) {
+        if (a.length == 0) {
+            return new int[0];
+        }
+
+        int[] l2r = new int[a.length];
+        int[] r2l = new int[a.length];
+
+        int[] re = new int[a.length];
+
+        l2r[0] = 1;
+        r2l[a.length - 1] = 1;
+
+        for (int i = 1; i < a.length; i++) {
+            l2r[i] = l2r[i-1] * a[i-1];
+        }
+        for (int i = a.length - 2; i>=0; i--) {
+            r2l[i] = r2l[i+1] * a[i+1];
+        }
+
+        re[0] = r2l[0];
+        re[a.length - 1] = l2r[a.length - 1];
+        for (int i = 1; i < a.length - 1; i++) {
+            re[i] = l2r[i] * r2l[i];
+        }
+        return re;
+    }
+
+
 }
+
