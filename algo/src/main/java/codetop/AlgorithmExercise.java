@@ -482,7 +482,17 @@ public class AlgorithmExercise {
      * leetcode 48
      * */
     public void rotate(int[][] matrix) {
-
+        int n = matrix.length;
+        int layer = n / 2;
+        for (int i = 0; i < layer; i++) {
+            for (int j = i; j < n - i - 1; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[n - j - 1][i];
+                matrix[n - j - 1][i] = matrix[n - i - 1][n - j - 1];
+                matrix[n - i - 1][n - j - 1] = matrix[j][n - i - 1];
+                matrix[j][n - i - 1] = temp;
+            }
+        }
     }
 
     /**
@@ -538,6 +548,47 @@ public class AlgorithmExercise {
     }
 
 
+
+    /**
+     * leetcode 54
+     * */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        int left = 0;
+        int right = matrix[0].length - 1;
+        int up = 0;
+        int down = matrix.length - 1;
+
+        List<Integer> result = new ArrayList<>();
+        int number = matrix.length * matrix[0].length;
+        int index = 0;
+
+        while (index < number) {
+            for (int i = left; i <= right && index < number; i++) {
+                result.add(matrix[up][i]);
+                index++;
+            }
+            up++;
+
+            for (int i = up; i <= down && index < number; i++) {
+                result.add(matrix[i][right]);
+                index++;
+            }
+            right--;
+
+            for (int i = right; i >= left && index < number; i--) {
+                result.add(matrix[down][i]);
+                index++;
+            }
+            down--;
+
+            for (int i = down; i >= up && index < number; i--) {
+                result.add(matrix[i][left]);
+                index++;
+            }
+            left++;
+        }
+        return result;
+    }
 
     /**
      * leetcode 55
@@ -686,9 +737,46 @@ public class AlgorithmExercise {
      * leetcode 73
      * */
     public void setZeroes(int[][] matrix) {
+        boolean col0 = false;
         for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; i < matrix[0].length; j++) {
+            if (matrix[i][0] == 0) {
+                col0 = true;
+                break;
+            }
+        }
+        boolean row0 = false;
+        for (int i = 0; i < matrix[0].length; i++) {
+            if (matrix[0][i] == 0) {
+                row0 = true;
+                break;
+            }
+        }
 
+        for (int i = 1; i < matrix.length; i++) {
+            for (int j = 1; j < matrix[0].length; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+
+        for (int i = 1; i < matrix.length; i++) {
+            for (int j = 1; j < matrix[0].length; j++) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        if (col0) {
+            for (int i = 0; i < matrix.length; i++) {
+                matrix[i][0] = 0;
+            }
+        }
+        if (row0) {
+            for (int i = 0; i < matrix[0].length; i++) {
+                matrix[0][i] = 0;
             }
         }
     }
@@ -711,6 +799,61 @@ public class AlgorithmExercise {
         cur.add(nums[index]);
         subsetsImpl(nums, index+1, result, cur);
         cur.remove(cur.size() - 1);
+    }
+
+
+    /**
+     * leetcode 79
+     * */
+    public boolean exist(char[][] board, String word) {
+        boolean[][] used = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (word.charAt(0) == board[i][j]) {
+                    used[i][j] = true;
+                    boolean flag = existImpl(board, used, word, i, j, 0);
+                    if (flag) {
+                        return true;
+                    }
+                    used[i][j] = false;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean existImpl(char[][] board, boolean[][] used, String word, int row, int column, int index) {
+        if (index == word.length() - 1) {
+            return true;
+        }
+        boolean down = false;
+        if (row > 0 && board[row - 1][column] == word.charAt(index + 1) && !used[row - 1][column]) {
+            used[row - 1][column] = true;
+            down = existImpl(board, used, word, row - 1, column, index + 1);
+            used[row - 1][column] = false;
+        }
+
+        boolean up = false;
+        if (row < board.length - 1 && board[row + 1][column] == word.charAt(index + 1) && !used[row + 1][column]) {
+            used[row + 1][column] = true;
+            up = existImpl(board, used, word, row + 1, column, index + 1);
+            used[row + 1][column] = false;
+        }
+
+        boolean left = false;
+        if (column > 0 && board[row][column - 1] == word.charAt(index + 1) && !used[row][column - 1]) {
+            used[row][column - 1] = true;
+            left = existImpl(board, used, word, row, column - 1, index + 1);
+            used[row][column - 1] = false;
+        }
+
+        boolean right = false;
+        if (column < board[0].length - 1 && board[row][column + 1] == word.charAt(index + 1) && !used[row][column + 1]) {
+            used[row][column + 1] = true;
+            right = existImpl(board, used, word, row, column + 1, index + 1);
+            used[row][column + 1] = false;
+        }
+
+        return up || down || left || right;
     }
 
 
@@ -738,6 +881,44 @@ public class AlgorithmExercise {
             index--;
         }
 
+    }
+
+
+
+
+    /**
+     * leetcode 91
+     * */
+    public int numDecodings(String s) {
+        if (s.startsWith("0")) {
+            return 0;
+        }
+        int[] num = new int[s.length() + 1];
+        num[0] = 1;
+        num[1] = 1;
+        for (int i = 1; i < s.length(); i++) {
+            int index = i + 1;
+            if (s.charAt(i) >= '1' && s.charAt(i) <= '6') {
+                if (s.charAt(i-1) == '1' || s.charAt(i-1) == '2') {
+                    num[index] = num[index - 1] + num[index - 2];
+                } else {
+                    num[index] = num[index - 1];
+                }
+            } else if (s.charAt(i) == '0'){
+                if (s.charAt(i - 1) == '1' || s.charAt(i-1) == '2') {
+                    num[index] = num[index - 2];
+                } else {
+                    return 0;
+                }
+            } else {
+                if (s.charAt(i - 1) == '1') {
+                    num[index] = num[index - 1] + num[index - 2];
+                } else {
+                    num[index] = num[index - 1];
+                }
+            }
+        }
+        return num[s.length()];
     }
 
 
@@ -909,6 +1090,125 @@ public class AlgorithmExercise {
 
 
     /**
+     * leetcode 125
+     * */
+    public boolean isPalindrome(String s) {
+        int low = 0;
+        int high = s.length() - 1;
+        while (low < high) {
+            while ((low < high) && !Character.isLetterOrDigit(s.charAt(low))) {
+                low++;
+            }
+            while ((low < high) && !Character.isLetterOrDigit(s.charAt(high))) {
+                high--;
+            }
+            if (Character.toLowerCase(s.charAt(low)) != Character.toLowerCase(s.charAt(high))) {
+                return false;
+            } else {
+                low++;
+                high--;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * leetcode 131
+     * */
+    public List<List<String>> partition(String s) {
+        boolean[][] palindromeDict = new boolean[s.length()][s.length()];
+        getPalDict(s, palindromeDict);
+        List<List<String>> result = new ArrayList<>();
+        List<String> cur = new ArrayList<>();
+        partitionImpl(s, 0, palindromeDict, result, cur);
+        return result;
+    }
+    public void partitionImpl(String s, int index, boolean[][] palindromeDict, List<List<String>> result, List<String> cur) {
+        if (index == s.length()) {
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = index; i < s.length(); i++) {
+            if (palindromeDict[index][i]) {
+                cur.add(s.substring(index, i + 1));
+                partitionImpl(s, i + 1, palindromeDict, result, cur);
+                cur.remove(cur.size() - 1);
+            }
+        }
+    }
+
+    public void getPalDict(String s, boolean[][] palindromeDict) {
+        for (int i = 0; i < s.length(); i++) {
+            palindromeDict[i][i] = true;
+        }
+        for (int i = s.length() - 2; i >= 0; i--) {
+            for (int j = i + 1; j < s.length(); j++) {
+                if (s.charAt(i) == s.charAt(j)) {
+                    palindromeDict[i][j] = (j-i <2) || palindromeDict[i + 1][j - 1];
+                }
+            }
+        }
+    }
+
+
+    /**
+     * leetcode 130
+     * */
+    public void solve(char[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][0] == 'O') {
+                board[i][0] = 'M';
+                solveImpl(board, i, 0);
+            }
+            if (board[i][board[0].length - 1] == 'O') {
+                board[i][board[0].length - 1] = 'M';
+                solveImpl(board, i, board[0].length - 1);
+            }
+        }
+
+        for (int j = 0; j < board[0].length; j++) {
+            if (board[0][j] == 'O') {
+                board[0][j] = 'M';
+                solveImpl(board, 0, j);
+            }
+            if (board[board.length - 1][j] == 'O') {
+                board[board.length - 1][j] = 'M';
+                solveImpl(board, board.length - 1, j);
+            }
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 'M') {
+                    board[i][j] = 'O';
+                } else {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+
+    }
+    public void solveImpl(char[][] board, int row, int column) {
+        if (row > 0 && board[row - 1][column] == 'O') {
+            board[row - 1][column] = 'M';
+            solveImpl(board, row - 1, column);
+        }
+        if (row < board.length - 1 && board[row + 1][column] == 'O') {
+            board[row + 1][column] = 'M';
+            solveImpl(board, row + 1, column);
+        }
+        if (column > 0 && board[row][column - 1] == 'O') {
+            board[row][column - 1] = 'M';
+            solveImpl(board, row, column - 1);
+        }
+        if (column < board[0].length - 1 && board[row][column + 1] == 'O') {
+            board[row][column + 1] = 'M';
+            solveImpl(board, row , column + 1);
+        }
+    }
+
+
+    /**
      * leetcode 136
      * */
     public int singleNumber(int[] nums) {
@@ -920,6 +1220,151 @@ public class AlgorithmExercise {
             result = result ^ nums[i];
         }
         return result;
+    }
+
+    /**
+     * leetcode 139
+     * */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> set = new HashSet<>(wordDict);
+        boolean[] nums = new boolean[s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j <= i; j++) {
+                if (i == j) {
+                    nums[i] = nums[i] || set.contains(s.substring(0, i + 1));
+                } else {
+                    nums[i] = nums[i] || (nums[j] && set.contains(s.substring(j + 1, i + 1)));
+                }
+            }
+        }
+        return nums[s.length() - 1];
+    }
+
+
+
+    /**
+     * leetcode 140
+     * */
+    public List<String> wordBreakV1(String s, List<String> wordDict) {
+        List<String> result = new ArrayList<>();
+        Set<String> set = new HashSet<>(wordDict);
+        List<List<String>> myList = new ArrayList<>();
+        List<String> cur = new ArrayList<>();
+        wordBreakImpl(s, 0,  myList, cur , set);
+        for (int i = 0; i < myList.size(); i++) {
+            result.add(String.join(" ", myList.get(i)));
+        }
+        return result;
+    }
+    public void wordBreakImpl(String s, int index, List<List<String>> result, List<String> cur, Set<String> wordD) {
+        if (index == s.length()) {
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = index; i < s.length(); i++) {
+            if (wordD.contains(s.substring(index, i + 1))) {
+                cur.add(s.substring(index, i + 1));
+                wordBreakImpl(s, i + 1, result, cur, wordD);
+                cur.remove(cur.size() - 1);
+            }
+        }
+    }
+
+    /**
+     * leetcode 171
+     * */
+    public int titleToNumber(String columnTitle) {
+        if (columnTitle.length() == 1) {
+            return columnTitle.charAt(0) - 'A' + 1;
+        }
+        int index = 1;
+        int sum = columnTitle.charAt(0) - 'A' + 1;
+        while (index < columnTitle.length()) {
+            sum = 26 * sum + columnTitle.charAt(index) - 'A' + 1;
+            index++;
+        }
+        return sum;
+    }
+
+
+    /**
+     * leetcode 189
+     * */
+    public void rotate(int[] nums, int k) {
+        k = k % nums.length;
+        rotateHelper(nums, 0, nums.length - k - 1);
+        rotateHelper(nums, nums.length - k, nums.length - 1);
+        rotateHelper(nums, 0, nums.length - 1);
+    }
+    public void rotateHelper(int[] nums, int low, int high) {
+        while (low < high) {
+            int temp = nums[low];
+            nums[low] = nums[high];
+            nums[high] = temp;
+
+            low++;
+            high--;
+        }
+    }
+
+    /**
+     * leetcode 198
+     * */
+    public int rob(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[] maxV = new int[nums.length];
+        maxV[0] = nums[0];
+        maxV[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            maxV[i] = Math.max(maxV[i-2] + nums[i], maxV[i-1]);
+        }
+        return maxV[nums.length - 1];
+    }
+
+
+    /**
+     * leetcode 200
+     * */
+    public int numIslands(char[][] grid) {
+        boolean[][] used = new boolean[grid.length][grid[0].length];
+        int num = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (!used[i][j] && grid[i][j] == '1') {
+                    used[i][j] = true;
+                    numIslandsImpl(grid, used, i, j);
+                    num++;
+                }
+            }
+        }
+        return num;
+    }
+    public void numIslandsImpl(char[][] grid, boolean[][] used, int row, int column) {
+        if (row > 0 && grid[row - 1][column] == '1' && !used[row - 1][column]) {
+            used[row - 1][column] = true;
+            numIslandsImpl(grid, used, row - 1, column);
+        }
+        if (row < grid.length - 1 && grid[row + 1][column]== '1' && !used[row + 1][column]) {
+            used[row + 1][column] = true;
+            numIslandsImpl(grid, used, row + 1, column);
+        }
+        if (column > 0 && grid[row][column - 1] == '1' && !used[row][column - 1]) {
+            used[row][column - 1] = true;
+            numIslandsImpl(grid, used, row, column - 1);
+        }
+        if (column < grid[0].length - 1 && grid[row][column + 1] == '1' && !used[row][column + 1]) {
+            used[row][column + 1] = true;
+            numIslandsImpl(grid, used, row, column + 1);
+        }
+    }
+
+    /**
+     * leetcode 212
+     * */
+    public List<String> findWords(char[][] board, String[] words) {
+        return null;
     }
 }
 
