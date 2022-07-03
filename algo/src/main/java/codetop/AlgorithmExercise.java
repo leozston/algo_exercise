@@ -1060,6 +1060,34 @@ public class AlgorithmExercise {
 
 
     /**
+     * leetcode 118
+     * */
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> result = new ArrayList<>();
+        int[][] nums = new int[numRows][numRows];
+        nums[0][0] = 1;
+        for (int i = 0; i < numRows; i++) {
+            nums[i][0] = 1;
+            nums[i][i] = 1;
+        }
+
+        for (int i = 1; i < numRows; i++) {
+            for (int j = 1; j < i; j++) {
+                nums[i][j] = nums[i-1][j-1] + nums[i-1][j];
+            }
+        }
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> cur = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                cur.add(nums[i][j]);
+            }
+            result.add(new ArrayList<>(cur));
+            cur = new ArrayList<>();
+        }
+        return result;
+    }
+
+    /**
      * leetcode 121
      * */
     public int maxProfit(int[] prices) {
@@ -1111,6 +1139,39 @@ public class AlgorithmExercise {
         }
         return true;
     }
+
+
+    /**
+     * leetcode 128
+     * */
+    public int longestConsecutive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            set.add(nums[i]);
+        }
+        int maxLen = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (set.contains(nums[i])) {
+                int cur = 1;
+                int curNum = nums[i];
+                set.remove(curNum);
+                while (set.contains(curNum - 1)) {
+                    cur++;
+                    curNum--;
+                    set.remove(curNum);
+                }
+                curNum = nums[i];
+                while (set.contains(curNum + 1)) {
+                    cur++;
+                    curNum++;
+                    set.remove(curNum);
+                }
+                maxLen = Math.max(maxLen, cur);
+            }
+        }
+        return maxLen;
+    }
+
 
     /**
      * leetcode 131
@@ -1269,6 +1330,133 @@ public class AlgorithmExercise {
             }
         }
     }
+
+
+
+    /**
+     * leetcode 141
+     * */
+    public boolean hasCycle(ListNode head) {
+        if (head == null) {
+            return false;
+        }
+        ListNode walk = head;
+        ListNode runner = head;
+
+        while (runner.next != null && runner.next.next != null) {
+            walk = walk.next;
+            runner = runner.next.next;
+            if (walk == runner) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * leetcode 148
+     * */
+    public ListNode sortList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        if (head.next == null) {
+            return head;
+        }
+
+        ListNode walker = head;
+        ListNode runner = head;
+        while (runner.next != null && runner.next.next != null) {
+            walker = walker.next;
+            runner = runner.next.next;
+        }
+
+        ListNode l1 = head;
+        ListNode l2 = walker.next;
+        walker.next = null;
+
+        ListNode pL1 = sortList(l1);
+        ListNode pL2 = sortList(l2);
+        ListNode sL = mergeTwoLists(pL1, pL2);
+        return sL;
+    }
+
+
+
+    /**
+     * leetcode 149
+     * */
+    public int maxPoints(int[][] points) {
+        if (points.length < 2) {
+            return points.length;
+        }
+        int maxN = 0;
+        for (int i = 0; i < points.length; i++) {
+            for (int j = i+1; j < points.length; j++) {
+                int x1 = points[i][0];
+                int y1 = points[i][1];
+                int x2 = points[j][0];
+                int y2 = points[j][1];
+
+                int temp = 0;
+                for (int k = j+1; k < points.length; k++) {
+                    int x3 = points[k][0];
+                    int y3 = points[k][1];
+                    if ((x3 - x2) * (y2 - y1) == (x2 - x1) * (y3 - y2)) {
+                        temp++;
+                    }
+                }
+                maxN = Math.max(maxN, temp);
+            }
+        }
+        return Math.max(maxN, 0) + 2;
+    }
+
+
+    /**
+     * leetcode 150
+     * */
+    public int evalRPN(String[] tokens) {
+        LinkedList<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < tokens.length; i++) {
+            String c = tokens[i];
+            switch (c) {
+                case "+":
+                    int num1 = stack.pop();
+                    int num2 = stack.pop();
+                    int num3 = num1 + num2;
+                    stack.push(num3);
+                    break;
+                case "-":
+                    num1 = stack.pop();
+                    num2 = stack.pop();
+                    num3 = num2 - num1;
+                    stack.push(num3);
+                    break;
+                case "*":
+                    num1 = stack.pop();
+                    num2 = stack.pop();
+                    num3 = num1 * num2;
+                    stack.push(num3);
+                    break;
+
+                case "/":
+                    num1 = stack.pop();
+                    num2 = stack.pop();
+                    num3 = (int)(num2 / num1);
+                    stack.push(num3);
+                    break;
+                default:
+                    int n = Integer.parseInt(c);
+                    stack.push(n);
+            }
+
+        }
+        return stack.pop();
+    }
+
 
     /**
      * leetcode 171

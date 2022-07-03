@@ -19,7 +19,13 @@ public class CodeTopUtils {
 //        if ((long)(a * a) < b && (long)((a+1)* (a+1)) > b) {
 //            System.out.println("aaabb");
 //        }
-        System.out.println((long)1073697672 * 1073697672);
+//        System.out.println((long)1073697672 * 1073697672);
+        float f1 = 8.0f / 3;
+        Map<Float, Integer> map = new HashMap<>();
+        map.put(f1, 1);
+        if (map.containsKey(16.0f / 6)) {
+            System.out.println("hhh");
+        }
     }
     public static void printArray(int[] nums) {
         for (int i = 0; i < nums.length; i++) {
