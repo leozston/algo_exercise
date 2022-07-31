@@ -11,8 +11,9 @@ import java.util.*;
 public class AlgorithmExercise {
     public static void main(String[] args) {
         System.out.println("hello world");
-        int r = mySqrt(2147395599);
-        System.out.println(r);
+        int[] nums = {2,0,2,1,1,0};
+        sortColors(nums);
+//        System.out.println(r);
     }
 
     /**
@@ -247,6 +248,32 @@ public class AlgorithmExercise {
      * */
     public List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i > 0 && nums[i] == nums[i-1]) {
+                continue;
+            }
+            int cur = -nums[i];
+            int low = i + 1;
+            int high = nums.length - 1;
+            while (low < high) {
+                if (low > i + 1 && nums[low] == nums[low - 1]) {
+                    low++;
+                    continue;
+                }
+                if (nums[low] + nums[high] == cur) {
+                    List<Integer> curL = new ArrayList<>();
+                    curL.add(-cur);
+                    curL.add(nums[low]);
+                    curL.add(nums[high]);
+                    result.add(curL);
+                } else if (nums[low] + nums[high] > cur) {
+                    high--;
+                } else {
+                    low++;
+                }
+            }
+        }
         return result;
     }
 
@@ -417,6 +444,181 @@ public class AlgorithmExercise {
     }
 
 
+    /**
+     * leetcode 26
+     * */
+    public int removeDuplicates(int[] nums) {
+        if (nums.length < 2) {
+            return nums.length;
+        }
+        int low = 0;
+        int high = 1;
+        while (high < nums.length) {
+            if (nums[high] == nums[low]) {
+                high++;
+            } else {
+                low++;
+                swap(nums, low, high);
+                high++;
+            }
+        }
+        return low+ 1;
+    }
+
+    public static void swap(int[] nums, int low, int high) {
+        int temp = nums[low];
+        nums[low] = nums[high];
+        nums[high] = temp;
+    }
+
+
+
+    /**
+     * leetcode 33
+     * */
+    public static int search(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            if (nums[mid] >= nums[low]) {
+                if (nums[low] <= target && nums[mid] > target) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && nums[high] >= target) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+
+    /**
+     * leetcode 38
+     * */
+    public String countAndSay(int n) {
+        String first = "1";
+        StringBuilder second = new StringBuilder();
+        for (int i = 2; i <=n; i++) {
+            Character c = first.charAt(0);
+            int c_n = 1;
+            for (int j = 1; j < first.length(); j++) {
+                Character c1 = first.charAt(j);
+                if (c1 == c) {
+                    c_n++;
+                } else {
+                    second.append(c_n);
+                    second.append(c);
+
+                    c_n = 1;
+                    c = c1;
+                }
+            }
+            second.append(c_n);
+            second.append(c);
+
+            first = second.toString();
+            second = new StringBuilder();
+        }
+        return first;
+    }
+
+
+    /**
+     * leetcode 40
+     * */
+    public int[] searchRange(int[] nums, int target) {
+        int[] result = new int[2];
+        result[0] = -1;
+        result[1] = -1;
+        int low = 0;
+        int high = nums.length - 1;
+        int index = -1;
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            if (nums[mid] == target) {
+                index = mid;
+                break;
+            } else if (nums[mid] > target) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        if (index == -1) {
+            return result;
+        }
+        int left = index - 1;
+        low = 0;
+        int leftIndex = -1;
+        while (low <= left) {
+            int mid = (low + left) / 2;
+            if (nums[mid] == target) {
+                leftIndex = mid;
+                left = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        int right = index + 1;
+        high = nums.length - 1;
+        int rightIndex = -1;
+        while (right <= high) {
+            int mid = (right + high) / 2;
+            if (nums[mid] == target) {
+                rightIndex = mid;
+                right = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        if (leftIndex != -1) {
+            result[0] = leftIndex;
+        } else {
+            result[0] = index;
+        }
+        if (rightIndex != -1) {
+            result[1] = rightIndex;
+        } else {
+            result[1] = index;
+        }
+        return result;
+    }
+
+
+
+    /**
+     * leetcode 41
+     * */
+    public int firstMissingPositive(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= 0) {
+                continue;
+            }
+            if (nums[i] != i+1 && nums[i] < nums.length && nums[nums[i] - 1] != nums[i] ) {
+                swap(nums, i, nums[i] - 1);
+                i--;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i+1) {
+                return i+1;
+            }
+        }
+        return nums.length + 1;
+    }
+
 
     /**
      * leetcode 42
@@ -545,6 +747,23 @@ public class AlgorithmExercise {
         } else {
             return v * v * x;
         }
+    }
+
+
+    /**
+     * leetcode 53
+     * */
+    public int maxSubArray(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int localMax = nums[0];
+        int globalMax = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            localMax = Math.max(localMax + nums[i], nums[i]);
+            globalMax = Math.max(globalMax, localMax);
+        }
+        return globalMax;
     }
 
 
@@ -781,6 +1000,82 @@ public class AlgorithmExercise {
         }
     }
 
+
+
+    /**
+     * leetcode 75
+     * */
+    public static void sortColors(int[] nums) {
+        int low = -1;
+        int high = nums.length;
+
+        int index = 0;
+        while (index < high) {
+            if (nums[index] == 0) {
+                low++;
+                swap(nums, low, index);
+                if (low >= index) {
+                    index++;
+                }
+            } else if (nums[index] == 1) {
+                index++;
+            } else if (nums[index] == 2) {
+                high--;
+                swap(nums, index, high);
+            }
+        }
+        CodeTopUtils.printArray(nums);
+    }
+
+
+
+    /**
+     * leetcode 76
+     * */
+    public String minWindow(String s, String t) {
+        String result = "";
+        int low = 0;
+        int high = 0;
+        int numbers = 0;
+        int minLen = Integer.MAX_VALUE;
+
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < t.length(); i++) {
+            if (map.containsKey(t.charAt(i))) {
+                map.put(t.charAt(i), map.get(t.charAt(i)) + 1);
+            } else {
+                map.put(t.charAt(i), 1);
+            }
+        }
+
+        while (high < s.length()) {
+            Character c = s.charAt(high);
+            if (map.containsKey(c)) {
+                if (map.get(c) > 0) {
+                    numbers++;
+                }
+                map.put(c, map.get(c) - 1);
+            }
+            while (numbers == t.length()) {
+                if (high - low + 1 < minLen) {
+                    minLen = high - low + 1;
+                    result = s.substring(low, high + 1);
+                }
+                Character c_low = s.charAt(low);
+                if (map.containsKey(c_low)) {
+                    map.put(c_low, map.get(c_low) + 1);
+                    if (map.get(c_low) > 0) {
+                        numbers--;
+                    }
+                }
+                low++;
+            }
+            high++;
+        }
+        return result;
+    }
+
+
     /**
      * leetcode 78
      * */
@@ -884,8 +1179,6 @@ public class AlgorithmExercise {
     }
 
 
-
-
     /**
      * leetcode 91
      * */
@@ -919,6 +1212,31 @@ public class AlgorithmExercise {
             }
         }
         return num[s.length()];
+    }
+
+
+
+    /**
+     * leetcode 94
+     * */
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) {
+            return result;
+        }
+        LinkedList<TreeNode> stack = new LinkedList<>();
+
+        while (!stack.isEmpty() || root != null) {
+            if (root != null) {
+                stack.push(root);
+                root = root.left;
+            } else {
+                TreeNode cur = stack.pop();
+                result.add(cur.val);
+                root = cur.right;
+            }
+        }
+        return result;
     }
 
 
@@ -1058,6 +1376,28 @@ public class AlgorithmExercise {
         return Math.max(maxDepthImpl(node.left), maxDepthImpl(node.right)) + 1;
     }
 
+
+
+
+    /**
+     * leetcode 108
+     * */
+    public TreeNode sortedArrayToBST(int[] nums) {
+        int low = 0;
+        int high = nums.length - 1;
+        return sortedArrayToBSTImpl(nums, low, high);
+    }
+
+    public TreeNode sortedArrayToBSTImpl(int[] nums, int low, int high) {
+        if (low > high) {
+            return null;
+        }
+        int mid = (low + high) / 2;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = sortedArrayToBSTImpl(nums, low, mid - 1);
+        node.right = sortedArrayToBSTImpl(nums, mid + 1, high);
+        return node;
+    }
 
     /**
      * leetcode 118
@@ -1269,6 +1609,38 @@ public class AlgorithmExercise {
     }
 
 
+
+    /**
+     * leetcode 134
+     * */
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        if (gas.length <= 0) {
+            return 0;
+        }
+        int[] gap = new int[gas.length];
+        for (int i = 0; i < gas.length; i++) {
+            gap[i] = gas[i] - cost[i];
+        }
+
+        int sum = 0;
+        int curSum = 0;
+        int index = -1;
+        for (int i = 0; i < gas.length; i++) {
+            sum += gap[i];
+
+            curSum += gap[i];
+            if (curSum < 0) {
+                index = i;
+                curSum = 0;
+            }
+        }
+        if (sum >= 0) {
+            return (index + 1) % gas.length;
+        }
+        return -1;
+    }
+
+
     /**
      * leetcode 136
      * */
@@ -1458,6 +1830,111 @@ public class AlgorithmExercise {
     }
 
 
+
+    /**
+     * leetcode 152
+     * */
+    public int maxProduct(int[] nums) {
+        if (nums.length < 1) {
+            return 0;
+        }
+        int localMax = nums[0];
+        int localMin = nums[0];
+        int globalMax = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+            int localMaxTemp = Math.max(Math.max(localMax * nums[i], nums[i]), localMin * nums[i]);
+            localMin = Math.min(Math.min(localMin * nums[i], nums[i]), localMax * nums[i]);
+
+            localMax = localMaxTemp;
+            globalMax = Math.max(globalMax, localMax);
+
+        }
+        return globalMax;
+    }
+
+    /**
+     * leetcode 160
+     * */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int lenA = 0;
+        int lenB = 0;
+        ListNode tempA = headA;
+        ListNode tempB = headB;
+        while (tempA != null) {
+            tempA = tempA.next;
+            lenA++;
+        }
+        while (tempB != null) {
+            tempB = tempB.next;
+            lenB++;
+        }
+        if (lenA > lenB) {
+            return getIntersectionNode(headB, headA);
+        }
+
+        int gap = lenB - lenA;
+        tempA = headA;
+        tempB = headB;
+        while (gap > 0) {
+            tempB = tempB.next;
+            gap--;
+        }
+        while (tempA != tempB && tempA != null) {
+            tempA = tempA.next;
+            tempB = tempB.next;
+        }
+        return tempA;
+
+    }
+
+
+    /**
+     * leetcode 162
+     * */
+    public int findPeakElement(int[] nums) {
+        int low = 0;
+        int high = nums.length - 1;
+        if (nums.length == 1) {
+            return 0;
+        }
+
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (nums[mid] < nums[mid + 1]) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+
+    /**
+     * leetcode 169
+     * */
+    public int majorityElement(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int res = nums[0];
+        int times = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (res == nums[i]) {
+                times++;
+            } else {
+                if (times > 0) {
+                    times--;
+                } else {
+                    res = nums[i];
+                    times = 1;
+                }
+            }
+        }
+        return res;
+    }
+
+
     /**
      * leetcode 171
      * */
@@ -1472,6 +1949,34 @@ public class AlgorithmExercise {
             index++;
         }
         return sum;
+    }
+
+
+    /**
+     * leetcode 179
+     * */
+    public String largestNumber(int[] nums) {
+        Integer[] numsT = new Integer[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            numsT[i] = nums[i];
+        }
+
+        Comparator<Integer> c = new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return (String.valueOf(o2) + String.valueOf(o1)).compareTo(String.valueOf(o1) + String.valueOf(o2));
+            }
+        };
+        Arrays.sort(numsT, c);
+        if (numsT[0] == 0) {
+            return "0";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numsT.length; i++) {
+            sb.append(numsT[i]);
+        }
+        return sb.toString();
     }
 
 
@@ -1548,11 +2053,90 @@ public class AlgorithmExercise {
         }
     }
 
+
+
+    /**
+     * leetcode 204
+     * */
+    public int countPrimes(int n) {
+        return 0;
+    }
+
+    /**
+     * leetcode 206
+     * */
+    public ListNode reverseList(ListNode head) {
+        ListNode helper = null;
+        if (head == null) {
+            return null;
+        }
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = helper;
+            helper = head;
+
+            head = next;
+        }
+        return helper;
+    }
+
     /**
      * leetcode 212
      * */
     public List<String> findWords(char[][] board, String[] words) {
         return null;
+    }
+
+    /**
+     * leetcode 215
+     * */
+    public int findKthLargest(int[] nums, int k) {
+        if (nums.length < k) {
+            return 0;
+        }
+        k = nums.length - k;
+        return findKthLargestImpl(nums, 0, nums.length - 1, k);
+    }
+    public int findKthLargestImpl(int[] nums, int low, int high, int k) {
+        int index = partition(nums, low, high);
+        if (index == k) {
+            return nums[index];
+        }
+        if (index > k) {
+            return findKthLargestImpl(nums, low, index - 1, k);
+        } else {
+            return findKthLargestImpl(nums, index + 1, high, k);
+        }
+    }
+
+    public int partition(int[] nums, int low, int high) {
+        int temp = nums[high];
+        while (low < high) {
+            while (low < high && nums[low] <= temp) {
+                low++;
+            }
+            swap(nums, low, high);
+
+            while (low < high && nums[high] >= temp) {
+                high--;
+            }
+            swap(nums, low, high);
+        }
+        return low;
+    }
+
+    /**
+     * leetcode 217
+     * */
+    public boolean containsDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (set.contains(nums[i])) {
+                return true;
+            }
+            set.add(nums[i]);
+        }
+        return false;
     }
 }
 
