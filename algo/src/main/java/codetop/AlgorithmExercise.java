@@ -194,6 +194,39 @@ public class AlgorithmExercise {
 
 
     /**
+     * leetcode 10
+     * */
+    public boolean isMatch(String s, String p) {
+        boolean[][] result = new boolean[s.length() + 1][p.length() + 1];
+        result[0][0] = true;
+        for (int i = 1; i < s.length() + 1; i++) {
+            result[i][0] = false;
+        }
+        for (int i = 1; i < p.length() + 1; i++) {
+            if (p.charAt(i - 1) == '*') {
+                result[0][i] = result[0][i-1] || (i>1 && result[0][i-2]);
+            } else {
+                result[0][i] = false;
+            }
+        }
+
+
+        for (int i = 1; i < s.length() + 1; i++) {
+            for (int j = 1; j < p.length() + 1; j++) {
+                if (s.charAt(i-1) == p.charAt(j-1)) {
+                    result[i][j] = result[i-1][j-1];
+                } else if (p.charAt(j-1) == '.') {
+                    result[i][j] = result[i-1][j-1];
+                } else if (p.charAt(j-1) == '*') {
+                    result[i][j] = result[i][j-2] || result[i][j-1] || ((s.charAt(i-1) == p.charAt(j-2)|| p.charAt(j-2) == '.') && result[i-1][j]);
+                }
+            }
+        }
+        return result[s.length()][p.length()];
+    }
+
+
+    /**
      * leetcode 11
      * */
     public int maxArea(int[] height) {
@@ -472,6 +505,53 @@ public class AlgorithmExercise {
     }
 
 
+    /**
+     * leetcode 29
+     * */
+    public int divide(int dividend, int divisor) {
+        // 考虑被除数为最小值的情况
+        if (dividend == Integer.MIN_VALUE) {
+            if (divisor == 1) {
+                return Integer.MIN_VALUE;
+            }
+            if (divisor == -1) {
+                return Integer.MAX_VALUE;
+            }
+        }
+        // 考虑除数为最小值的情况
+        if (divisor == Integer.MIN_VALUE) {
+            return dividend == Integer.MIN_VALUE ? 1 : 0;
+        }
+        // 考虑被除数为 0 的情况
+        if (dividend == 0) {
+            return 0;
+        }
+
+        boolean flag1 = true;
+        boolean flag2 = true;
+        if (dividend < 0) {
+            flag1 = false;
+            dividend = -dividend;
+        }
+        if (divisor < 0) {
+            flag2 = false;
+            divisor = - divisor;
+        }
+
+        int sum = 0;
+        while (dividend >= divisor) {
+            int cur = divisor;
+            int sum1 = 1;
+            while (dividend >= (cur + cur)) {
+                sum1 += sum1;
+                cur += cur;
+            }
+            dividend = dividend - cur;
+            sum = sum + sum1;
+        }
+        return flag1 == flag2 ? sum : -sum;
+    }
+
 
     /**
      * leetcode 33
@@ -651,6 +731,39 @@ public class AlgorithmExercise {
         return sum;
     }
 
+
+
+    /**
+     * leetcode 44
+     * */
+    public boolean isMatchV2(String s, String p) {
+        boolean[][] result = new boolean[s.length() + 1][p.length() + 1];
+        result[0][0] = true;
+        for (int i = 1; i < s.length() + 1; i++) {
+            result[i][0] = false;
+        }
+        for (int i = 1; i < p.length() + 1; i++) {
+            if (p.charAt(i - 1) == '*') {
+                result[0][i] = result[0][i-1];
+            } else {
+                result[0][i] = false;
+            }
+        }
+
+
+        for (int i = 1; i < s.length() + 1; i++) {
+            for (int j = 1; j < p.length() + 1; j++) {
+                if (s.charAt(i-1) == p.charAt(j-1)) {
+                    result[i][j] = result[i-1][j-1];
+                } else if (p.charAt(j-1) == '?') {
+                    result[i][j] = result[i-1][j-1];
+                } else if (p.charAt(j-1) == '*') {
+                    result[i][j] = result[i][j-1] || result[i-1][j];
+                }
+            }
+        }
+        return result[s.length()][p.length()];
+    }
 
     /**
      * leetcode 46
@@ -1953,6 +2066,21 @@ public class AlgorithmExercise {
 
 
     /**
+     * leetcode 172
+     * */
+    public int trailingZeroes(int n) {
+        int sum = 0;
+        for (int i = 5; i <= n; i=i+5) {
+            int t = i;
+            while (t % 5 == 0) {
+                sum++;
+                t = t /5;
+            }
+        }
+        return sum;
+    }
+
+    /**
      * leetcode 179
      * */
     public String largestNumber(int[] nums) {
@@ -2079,6 +2207,103 @@ public class AlgorithmExercise {
         }
         return helper;
     }
+
+    /**
+     * leetcode 207
+     * */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < prerequisites.length; i++) {
+            int src = prerequisites[i][0];
+            int depend = prerequisites[i][1];
+
+            if (map.containsKey(src)) {
+                map.put(src, map.get(src) + 1);
+            } else {
+                map.put(src, 1);
+            }
+        }
+        LinkedList<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (!map.containsKey(i)) {
+                queue.offer(i);
+            }
+        }
+
+        int num = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            num++;
+
+            for (int i = 0; i < prerequisites.length; i++) {
+                int src = prerequisites[i][0];
+                int depend = prerequisites[i][1];
+
+                if (cur == depend) {
+                    map.put(src, map.get(src) - 1);
+                    if (map.get(src) == 0) {
+                        queue.offer(src);
+                    }
+                }
+            }
+        }
+
+        return num == numCourses;
+    }
+
+
+
+    /**
+     * leetcode 210
+     * */
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < prerequisites.length; i++) {
+            int src = prerequisites[i][0];
+            int depend = prerequisites[i][1];
+
+            if (map.containsKey(src)) {
+                map.put(src, map.get(src) + 1);
+            } else {
+                map.put(src, 1);
+            }
+        }
+        LinkedList<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (!map.containsKey(i)) {
+                queue.offer(i);
+            }
+        }
+
+        ArrayList<Integer> list = new ArrayList<>();
+        int num = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            num++;
+            list.add(cur);
+
+            for (int i = 0; i < prerequisites.length; i++) {
+                int src = prerequisites[i][0];
+                int depend = prerequisites[i][1];
+
+                if (cur == depend) {
+                    map.put(src, map.get(src) - 1);
+                    if (map.get(src) == 0) {
+                        queue.offer(src);
+                    }
+                }
+            }
+        }
+        if (num != numCourses) {
+            return new int[0];
+        }
+        int[] nums = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            nums[i] = list.get(i);
+        }
+        return nums;
+    }
+
 
     /**
      * leetcode 212
