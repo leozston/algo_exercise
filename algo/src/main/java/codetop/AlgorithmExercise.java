@@ -34,6 +34,11 @@ public class AlgorithmExercise {
 //        while (!q.isEmpty()) {
 //            System.out.println(q.poll());
 //        }
+
+//        System.out.println(Integer.valueOf('4'));
+        String s = "(1+(4+5+2)-3)+(6+8)";
+        int r = calculateV1_1(s);
+
     }
 
     /**
@@ -2566,6 +2571,7 @@ public class AlgorithmExercise {
      * */
     public int calculate(String s) {
         LinkedList<String> stack = new LinkedList<>();
+        LinkedList<Character> stackFlag = new LinkedList<>();
         char preS = '+';
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -2573,21 +2579,27 @@ public class AlgorithmExercise {
                 continue;
             } else if (c == '(') {
                 stack.push("(");
+                stackFlag.push(preS);
             } else if (c == ')') {
                 int curN1 = 0;
+                char c2 = '+';
                 while (!stack.isEmpty()) {
                     String s1 = stack.pop();
                     if (s1 == "(") {
+                        c2 = stackFlag.pop();
                         break;
                     }
                     curN1 += Integer.valueOf(s1);
+                }
+                if (c2 == '-') {
+                    curN1 = -curN1;
                 }
                 stack.push(String.valueOf(curN1));
             } else {
                 int num = 0;
                 if (Character.isDigit(c)) {
-                    while (i < s.length() && Character.isDigit(s.charAt(i))) {
-                        num = num * 10 + s.charAt(i) - '0';
+                    while ((i + 1) < s.length() && Character.isDigit(s.charAt((i + 1)))) {
+                        num = num * 10 + s.charAt(i + 1) - '0';
                         i++;
                     }
                 }
@@ -2658,6 +2670,141 @@ public class AlgorithmExercise {
             result += stack.pop();
         }
         return result;
+    }
+
+
+    /**
+     * leetcode 224 字符串统一处理方式：两个栈
+     * */
+    public static LinkedList<Integer> calculateV1Nums = new LinkedList<>();
+    public static LinkedList<Character> calculateV1Ops = new LinkedList<>();
+    public static int calculateV1_1(String s) {
+        StringBuilder sb = new StringBuilder("0");
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                sb.append("(0");
+            } else if (s.charAt(i) == ' '){
+
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        String s_1 = sb.toString();
+        calculateV1Nums = new LinkedList<>();
+        calculateV1Ops = new LinkedList<>();
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('+', 1);
+        map.put('-', 1);
+        map.put('*', 2);
+        map.put('/', 2);
+        for (int i = 0; i < s_1.length(); i++) {
+            char c = s_1.charAt(i);
+            if (Character.isDigit(c)) {
+                int num = c - '0';
+                while ((i+1) < s_1.length() && Character.isDigit(s_1.charAt(i+1))) {
+                    num = num * 10 + s_1.charAt(i+1) - '0';
+                    i++;
+                }
+
+                calculateV1Nums.push(num);
+            } else if (c == ' ') {
+                continue;
+            } else if (c == '(') {
+                calculateV1Ops.push(c);
+            } else if (c == ')') {
+                while (!calculateV1Ops.isEmpty()) {
+                    int r = evalV1();
+                    if (r == 0) {
+                        break;
+                    }
+                }
+            } else if (c == '+' || c == '-') {
+                while (!calculateV1Ops.isEmpty() && calculateV1Ops.peek() != '(') {
+                    evalV1();
+                }
+                calculateV1Ops.push(c);
+            }
+        }
+
+        while (!calculateV1Ops.isEmpty()) {
+            evalV1();
+        }
+        return calculateV1Nums.pop();
+    }
+
+    public static int evalV1() {
+        char c1 = calculateV1Ops.pop();
+        if (c1 == '(') {
+            return 0;
+        } else if (c1 == '+') {
+            int b = calculateV1Nums.pop();
+            int a = calculateV1Nums.pop();
+            calculateV1Nums.push(a+b);
+        } else if (c1 == '-') {
+            int b = calculateV1Nums.pop();
+            int a = calculateV1Nums.pop();
+            calculateV1Nums.push(a-b);
+        }
+        return 1;
+    }
+
+
+    /**
+     * leetcode 227字符串统一处理方式版本：两个栈
+     * */
+    public static LinkedList<Integer> calculateNums = new LinkedList<>();
+    public static LinkedList<Character> calculateOps = new LinkedList<>();
+    public int calculateV2_1(String s) {
+        StringBuilder sb = new StringBuilder("0");
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ' '){
+
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        String s_1 = sb.toString();
+        calculateNums = new LinkedList<>();
+        calculateOps = new LinkedList<>();
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('+', 1);   //定义运算符的优先级
+        map.put('-', 1);
+        map.put('*', 2);
+        map.put('/', 2);
+
+        for (int i = 0; i < s_1.length(); i++) {
+            char c = s_1.charAt(i);
+            if (Character.isDigit(c)) {
+                int num = c - '0';
+                while ((i + 1) < s_1.length() && Character.isDigit(s_1.charAt(i + 1))) {
+                    num = num * 10 + s_1.charAt(i + 1) - '0';
+                    i++;
+                }
+                calculateNums.push(num);
+            } else if (c == ' ') {
+                continue;
+            } else {
+                while ((!calculateOps.isEmpty()) && (map.get(calculateOps.peek())) >= map.get(c)) {
+                    eval();
+                }
+                calculateOps.push(c);
+            }
+        }
+        while (!calculateOps.isEmpty()) {
+            eval();
+        }
+        return calculateNums.pop();
+    }
+    public void eval() {
+        int b = calculateNums.pop();
+        int a = calculateNums.pop();
+        char c = calculateOps.pop();
+        int r = 0;
+        if(c == '+') r = a + b;
+        else if(c == '-') r = a - b;
+        else if(c == '*') r = a * b;
+        else r = a / b;
+        calculateNums.push(r);
     }
 
 
@@ -2976,6 +3123,14 @@ public class AlgorithmExercise {
 
 
     /**
+     * leetcode 324
+     * */
+    public void wiggleSort(int[] nums) {
+
+    }
+
+
+    /**
      * leetcode 326
      * */
     public boolean isPowerOfThree(int n) {
@@ -2991,6 +3146,28 @@ public class AlgorithmExercise {
             }
         }
         return true;
+    }
+
+
+    /**
+     * leetcode 328
+     * */
+    public ListNode oddEvenList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode h1 = head;
+        ListNode h2 = head.next;
+        ListNode helper = h2;
+        while (h2 != null && h2.next != null) {
+            h1.next = h2.next;
+            h1 = h1.next;
+
+            h2.next = h1.next;
+            h2 = h2.next;
+        }
+        h1.next = helper;
+        return head;
     }
 
 
@@ -3084,5 +3261,110 @@ public class AlgorithmExercise {
         int n = a ^ b;
         return m+n;
     }
+
+    /**
+     * leetcode 378
+     * */
+    public int kthSmallest(int[][] matrix, int k) {
+        PriorityQueue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        for (int i = 0; i < matrix.length; i++) {
+            int[] nums = new int[3];
+            nums[0] = matrix[i][0];
+            nums[1] = i;
+            nums[2] = 0;
+            queue.offer(nums);
+        }
+
+        for (int i = 0; i < k - 1; i++) {
+            int[] nums = queue.poll();
+            int row = nums[1];
+            int column = nums[2];
+            if (column + 1 < matrix[row].length) {
+                int[] t = new int[3];
+                t[0] = matrix[row][column + 1];
+                t[1] = row;
+                t[2] = column + 1;
+                queue.offer(t);
+            }
+        }
+        return queue.poll()[0];
+    }
+
+
+    /**
+     * leetcode 387
+     * */
+    public int firstUniqChar(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (map.get(s.charAt(i)) == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+
+    /**
+     * leetcode 412
+     * */
+    public List<String> fizzBuzz(int n) {
+        List<String> list = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            String s = String.valueOf(i);
+            if (i % 3 == 0 && i % 5 == 0) {
+                s = "FizzBuzz";
+            } else if(i % 3 == 0) {
+                s = "Fizz";
+            } else if (i % 5 == 0) {
+                s = "Buzz";
+            }
+            list.add(s);
+        }
+        return list;
+    }
+
+
+    /**
+     * leetcode 454
+     * */
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        Map<Integer, Integer> map1 = new HashMap<>();
+        Map<Integer, Integer> map2 = new HashMap<>();
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                int n1 = nums1[i] + nums2[j];
+                map1.put(n1, map1.getOrDefault(n1, 0) + 1);
+            }
+        }
+
+        for (int i = 0; i < nums3.length; i++) {
+            for (int j = 0; j < nums4.length; j++) {
+                int n1 = nums3[i] + nums4[j];
+                map2.put(n1, map2.getOrDefault(n1, 0) + 1);
+            }
+        }
+
+        int res = 0;
+        for (Map.Entry<Integer, Integer> e : map1.entrySet()) {
+            int key = e.getKey();
+            int value = e.getValue();
+            if (map2.containsKey(-key)) {
+                res += value * map2.get(-key);
+            }
+        }
+        return res;
+    }
 }
+
+
 
