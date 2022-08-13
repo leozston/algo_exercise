@@ -12,8 +12,28 @@ public class AlgorithmExercise {
     public static void main(String[] args) {
         System.out.println("hello world");
         int[] nums = {2,0,2,1,1,0};
-        sortColors(nums);
+//        sortColors(nums);
 //        System.out.println(r);
+        LinkedList<Integer> stack = new LinkedList<>();
+        stack.push(1);
+        stack.push(2);
+//        System.out.println(stack.peekFirst());
+//        System.out.println(stack.peekLast());
+
+//        PriorityQueue<Integer> q = new PriorityQueue<Integer>(new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer o1, Integer o2) {
+//                return o1 - o2;
+//            }
+//        });
+//        q.offer(0);
+//        q.offer(3);
+//        q.offer(1);
+//        q.offer(2);
+//        q.offer(4);
+//        while (!q.isEmpty()) {
+//            System.out.println(q.poll());
+//        }
     }
 
     /**
@@ -244,6 +264,54 @@ public class AlgorithmExercise {
         }
         return maxV;
     }
+
+
+    /**
+     * leetcode 13
+     * */
+    public int romanToInt(String s) {
+        int result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+            switch (c) {
+                case 'I':
+                    if (i < s.length() - 1 && (s.charAt(i + 1) == 'V' || s.charAt(i+1) == 'X')) {
+                        result -= 1;
+                    } else {
+                        result += 1;
+                    }
+                    break;
+                case 'V':
+                    result += 5;
+                    break;
+                case 'X':
+                    if (i < s.length() - 1 && (s.charAt(i + 1) == 'L' || s.charAt(i+1) == 'C')) {
+                        result -= 10;
+                    } else {
+                        result += 10;
+                    }
+                    break;
+                case 'L':
+                    result += 50;
+                    break;
+                case 'C':
+                    if (i < s.length() - 1 && (s.charAt(i + 1) == 'D' || s.charAt(i+1) == 'M')) {
+                        result -= 100;
+                    } else {
+                        result += 100;
+                    }
+                    break;
+                case 'D':
+                    result += 500;
+                    break;
+                case 'M':
+                    result += 1000;
+                    break;
+            }
+        }
+        return result;
+    }
+
 
     /**
      * leetcode 14
@@ -1512,6 +1580,9 @@ public class AlgorithmExercise {
         return node;
     }
 
+
+
+
     /**
      * leetcode 118
      * */
@@ -2023,6 +2094,62 @@ public class AlgorithmExercise {
         return low;
     }
 
+
+
+    /**
+     * leetcode 166
+     * */
+    public String fractionToDecimal(int numerator, int denominator) {
+        boolean flag = true;
+        if ((numerator < 0 && denominator > 0) || (numerator > 0 && denominator < 0)) {
+            flag = false;
+        }
+        Long numeratorL = Math.abs((long)numerator);
+        Long denominatorL = Math.abs((long)denominator);
+        String re = String.valueOf(numeratorL / denominatorL);
+        if (!flag) {
+            re = "-" + re;
+        }
+        long carry = numeratorL % denominatorL;
+        if (carry == 0) {
+            return re;
+        }
+
+        List<String> list = new ArrayList<>();
+        Map<Long, Integer> map = new HashMap<>();
+        int index = 0;
+        int startIndex = -1;
+
+        carry = (carry % denominatorL) * 10;
+        while (carry != 0) {
+            if (map.containsKey(carry)) {
+                startIndex = map.get(carry);
+                break;
+            }
+            map.put(carry, index);
+            index++;
+            long v = carry / denominatorL;
+            list.add(String.valueOf(v));
+            carry = (carry % denominatorL) * 10;
+        }
+
+        if (startIndex == -1) {
+            re += ".";
+            for (int i = 0; i < list.size(); i++) {
+                re += list.get(i);
+            }
+        } else {
+            re += ".";
+            list.add(startIndex, "(");
+            list.add(")");
+            for (int i = 0; i < list.size(); i++) {
+                re += list.get(i);
+            }
+        }
+        return re;
+    }
+
+
     /**
      * leetcode 169
      * */
@@ -2128,6 +2255,36 @@ public class AlgorithmExercise {
         }
     }
 
+
+    /**
+     * leetcode 190
+     * */
+    public int reverseBits(int n) {
+        int result = 0;
+        for (int i = 0; i < 32; i++) {
+            int a = n & 1;
+            result = (result << 1) + a;
+            n = n >> 1;
+        }
+        return result;
+    }
+
+
+    /**
+     * leetcode 191
+     * */
+    public int hammingWeight(int n) {
+        int result = 0;
+        while (n != 0) {
+//            result += (n & 1);
+//            n = n >> 1;
+            // opt
+            result++;
+            n = n & (n-1);
+        }
+        return result;
+    }
+
     /**
      * leetcode 198
      * */
@@ -2182,13 +2339,52 @@ public class AlgorithmExercise {
     }
 
 
+    /**
+     * leetcode 202
+     * */
+    public boolean isHappy(int n) {
+        int cur = 0;
+        Set<Integer> set = new HashSet<>();
+        while (n != 1) {
+            if (set.contains(n)) {
+                return false;
+            }
+            set.add(n);
+
+            while (n > 0) {
+                int a = n % 10;
+                n = n / 10;
+                cur += a * a;
+            }
+
+            System.out.println(cur);
+            n = cur;
+            cur = 0;
+        }
+        return true;
+    }
 
     /**
      * leetcode 204
      * */
     public int countPrimes(int n) {
-        return 0;
+        int re = 0;
+        for (int i = 2; i < n; i++) {
+            if (countPrimesImpl(i)) {
+                re++;
+            }
+        }
+        return re;
     }
+    public boolean countPrimesImpl(int n) {
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * leetcode 206
@@ -2362,6 +2558,531 @@ public class AlgorithmExercise {
             set.add(nums[i]);
         }
         return false;
+    }
+
+
+    /**
+     * leetcode 224
+     * */
+    public int calculate(String s) {
+        LinkedList<String> stack = new LinkedList<>();
+        char preS = '+';
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == ' ') {
+                continue;
+            } else if (c == '(') {
+                stack.push("(");
+            } else if (c == ')') {
+                int curN1 = 0;
+                while (!stack.isEmpty()) {
+                    String s1 = stack.pop();
+                    if (s1 == "(") {
+                        break;
+                    }
+                    curN1 += Integer.valueOf(s1);
+                }
+                stack.push(String.valueOf(curN1));
+            } else {
+                int num = 0;
+                if (Character.isDigit(c)) {
+                    while (i < s.length() && Character.isDigit(s.charAt(i))) {
+                        num = num * 10 + s.charAt(i) - '0';
+                        i++;
+                    }
+                }
+
+                switch (preS) {
+                    case '+':
+                        stack.push(String.valueOf(num));
+                        break;
+                    case '-':
+                        stack.push(String.valueOf(-num));
+                        break;
+                }
+                if (i < s.length()) {
+                    preS = s.charAt(i);
+                }
+            }
+        }
+        int result = 0;
+        while(!stack.isEmpty()) {
+            result += Integer.valueOf(stack.pop());
+        }
+        return result;
+    }
+
+
+    /**
+     * leetcode 227
+     * */
+    public int calculateV2(String s) {
+        LinkedList<Integer> stack = new LinkedList<>();
+        char preS = '+';
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == ' ') {
+                continue;
+            }
+            int num = 0;
+            if (Character.isDigit(c)) {
+                while (i < s.length() && Character.isDigit(s.charAt(i))) {
+                    num = num * 10 + s.charAt(i) - '0';
+                    i++;
+                }
+            }
+            switch (preS) {
+                case '+':
+                    stack.push(num);
+                    break;
+                case '-':
+                    stack.push(-num);
+                    break;
+                case '*':
+                    int t1 = stack.pop();
+                    stack.push(t1 * num);
+                    break;
+                case '/':
+                    int t2 = stack.pop();
+                    stack.push(t2/num);
+                    break;
+                case ' ':
+                    break;
+            }
+            if (i < s.length()) {
+                preS = s.charAt(i);
+            }
+        }
+        int result = 0;
+        while(!stack.isEmpty()) {
+            result += stack.pop();
+        }
+        return result;
+    }
+
+
+
+    /**
+     * leetcode 230
+     * */
+    public static int kthSmallestVar = 0;
+    public static int kthSmallestVarRes = 0;
+    public int kthSmallest(TreeNode root, int k) {
+        kthSmallestVar = k;
+        kthSmallestImpl(root);
+        return kthSmallestVarRes;
+    }
+
+    public void kthSmallestImpl(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        kthSmallestImpl(node.left);
+        kthSmallestVar--;
+        if (kthSmallestVar == 0) {
+            kthSmallestVarRes = node.val;
+            return;
+        }
+        kthSmallestImpl(node.right);
+    }
+
+
+    /**
+     * leetcode 234
+     * */
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) {
+            return true;
+        }
+        ListNode walker = head;
+        ListNode runner = head.next;
+        while (runner != null && runner.next != null) {
+            walker = walker.next;
+            runner = runner.next.next;
+        }
+        ListNode first = head;
+        ListNode second = walker.next;
+        ListNode helper = null;
+        while (second != null) {
+            ListNode next = second.next;
+            second.next = helper;
+            helper = second;
+            second = next;
+        }
+
+        second = helper;
+        while (second != null) {
+            if (first.val != second.val) {
+                return false;
+            }
+            first = first.next;
+            second = second.next;
+        }
+        return true;
+    }
+
+
+    /**
+     * leetcode 236
+     * */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        return null;
+    }
+
+
+    /**
+     * leetcode 237
+     * */
+    public void deleteNode(ListNode node) {
+        node.val = node.next.val;
+        node.next = node.next.next;
+    }
+
+    /**
+     * leetcode 238
+     * */
+    public int[] productExceptSelf(int[] nums) {
+        int[] l2r = new int[nums.length];
+        int[] r2l = new int[nums.length];
+        l2r[0] = 1;
+        r2l[nums.length - 1] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            l2r[i] = l2r[i-1] * nums[i - 1];
+        }
+        for (int i = nums.length - 2; i >= 0; i--) {
+            r2l[i] = r2l[i + 1] * nums[i + 1];
+        }
+
+        int[] res = new int[nums.length];
+        for (int i  = 0; i < nums.length; i++) {
+            res[i] = l2r[i] * r2l[i];
+        }
+        return res;
+    }
+
+
+    /**
+     * leetcode 239
+     * */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums.length == 0) {
+            return new int[0];
+        }
+        if (nums.length < k) {
+            return new int[0];
+        }
+
+        List<Integer> list = new ArrayList<>();
+        LinkedList<Integer> stack = new LinkedList<>();
+        stack.push(0);
+        for (int i = 1; i < k; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {
+                stack.pop();
+            }
+            stack.push(i);
+        }
+        list.add(stack.peekLast());
+
+        for (int i = k; i < nums.length; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {
+                stack.pop();
+            }
+            if ((!stack.isEmpty()) && (i - stack.peekLast() >= k)) {
+                stack.pollLast();
+            }
+            stack.push(i);
+            list.add(stack.peekLast());
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = nums[list.get(i)];
+        }
+        return res;
+    }
+
+
+
+    /**
+     * leetcode 240
+     * */
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int row = 0;
+        int column = matrix[0].length - 1;
+        while (row < matrix.length && column >= 0) {
+            if (target == matrix[row][column]) {
+                return true;
+            } else if (target > matrix[row][column]) {
+                row++;
+            } else {
+                column--;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * leetcode 242
+     * */
+    public boolean isAnagram(String s, String t) {
+        Map<Character, Integer> map = new HashMap<>();
+        if (s.length() != t.length()) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (map.containsKey(s.charAt(i))) {
+                map.put(s.charAt(i), map.get(s.charAt(i)) + 1);
+            } else {
+                map.put(s.charAt(i), 1);
+            }
+        }
+        for (int i = 0; i < t.length(); i++) {
+            if (!map.containsKey(t.charAt(i))) {
+                return false;
+            }
+            if (map.get(t.charAt(i)) < 1) {
+                return false;
+            }
+            map.put(t.charAt(i), map.get(t.charAt(i)) - 1);
+        }
+        return true;
+    }
+
+
+    /**
+     * leetcode 268
+     * */
+    public int missingNumber(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == i || nums[i] < 0 || nums[i] >= nums.length) {
+                continue;
+            }
+            if (nums[i] == nums[nums[i]]) {
+                continue;
+            }
+            swap(nums, i, nums[i]);
+            i--;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i) {
+                return i;
+            }
+        }
+        return nums.length;
+    }
+
+
+    /**
+     * leetcode 279
+     * */
+    public int numSquares(int n) {
+        int[] res = new int[n+1];
+        res[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            int curMin = i;
+            if (((int)Math.sqrt(i)) * ((int)Math.sqrt(i)) == i) {
+                res[i] = 1;
+                continue;
+            }
+            for (int j = 1; j * j < i; j++) {
+//                这里的递推关系，可以利用j*j的性质
+//                curMin = Math.min(res[j] + res[i - j], curMin);
+                curMin = Math.min(curMin, res[i - j * j] + 1);
+            }
+            res[i] = curMin;
+        }
+        return res[n];
+    }
+
+
+    /**
+     * leetcode 287
+     * */
+    public int findDuplicate(int[] nums) {
+        int low = 1;
+        int high = nums.length;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            int num = findNums(nums, low, mid);
+            if (num == mid - low + 1) {
+                low = mid + 1;
+            } else if (num > (mid - low + 1)) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+    public int findNums(int[] nums, int low, int high) {
+        int re = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] >= low && nums[i] <= high) {
+                re++;
+            }
+        }
+        return re;
+    }
+
+
+    /**
+     * leetcode 300
+     * */
+    public int lengthOfLIS(int[] nums) {
+        int[] res = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            res[i + 1] = 1;
+        }
+        int maxLen = 1;
+        for (int i = 0; i < nums.length; i++) {
+            int curMax = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    curMax = Math.max(curMax, res[j + 1] + 1);
+                }
+            }
+            res[i+1] = curMax;
+            maxLen = Math.max(maxLen, curMax);
+        }
+        return maxLen;
+    }
+
+
+
+    /**
+     * leetcode 322
+     * */
+    public int coinChange(int[] coins, int amount) {
+        int[] res = new int[amount + 1];
+
+        for (int i = 1; i <= amount; i++) {
+            int temp = Integer.MAX_VALUE;
+            for (int j = 0; j < coins.length; j++) {
+                if (i == coins[j]) {
+                    temp = 1;
+                    break;
+                } else if (i < coins[j]) {
+                    continue;
+                } else {
+                    if (res[i - coins[j]] != Integer.MAX_VALUE) {
+                        temp = Math.min(res[i - coins[j]] + 1, temp);
+                    }
+                }
+            }
+            res[i] = temp;
+        }
+        return res[amount] == Integer.MAX_VALUE? -1 : res[amount];
+    }
+
+
+    /**
+     * leetcode 326
+     * */
+    public boolean isPowerOfThree(int n) {
+        if (n == 0) {
+            return false;
+        }
+        int ex = 0;
+        while (n != 1) {
+            ex = n % 3;
+            n = n / 3;
+            if (ex != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * leetcode 344
+     * */
+    public void reverseString(char[] s) {
+        int low = 0;
+        int high = s.length - 1;
+        while (low < high) {
+            char t = s[low];
+            s[low] = s[high];
+            s[high] = t;
+            low++;
+            high--;
+        }
+    }
+
+    /**
+     * leetcode 347
+     * */
+    public int[] topKFrequent(int[] nums, int k) {
+        PriorityQueue<Map.Entry<Integer, Integer>> queue = new PriorityQueue<>(new Comparator<Map.Entry<Integer, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+                return o1.getValue() - o2.getValue();
+            }
+        });
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(nums[i])) {
+                map.put(nums[i], map.get(nums[i]) + 1);
+            } else {
+                map.put(nums[i], 1);
+            }
+        }
+        for (Map.Entry<Integer, Integer> e : map.entrySet()) {
+            queue.offer(e);
+            if (queue.size() > k) {
+                queue.poll();
+            }
+        }
+
+        int[] res = new int[queue.size()];
+        int index = 0;
+        while (!queue.isEmpty()) {
+            res[index] = queue.poll().getKey();
+            index++;
+        }
+        return res;
+    }
+
+    /**
+     * leetcode 350
+     * */
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> map1 = new HashMap<>();
+        Map<Integer, Integer> map2 = new HashMap<>();
+        for (int i = 0; i < nums1.length; i++) {
+            map1.put(nums1[i], map1.getOrDefault(nums1[i], 0) + 1);
+        }
+
+        for (int i = 0; i < nums2.length; i++) {
+            map2.put(nums2[i], map2.getOrDefault(nums2[i], 0) + 1);
+        }
+
+        List<Integer> list = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> e : map1.entrySet()) {
+            if (map2.containsKey(e.getKey())) {
+                int t = Math.min(e.getValue(), map2.get(e.getKey()));
+                for (int i = 0; i < t; i++) {
+                    list.add(e.getKey());
+                }
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+
+
+    /**
+     * leetcode 371
+     * */
+    public int getSum(int a, int b) {
+        int m = a & b;
+        m = m << 1;
+        int n = a ^ b;
+        return m+n;
     }
 }
 
