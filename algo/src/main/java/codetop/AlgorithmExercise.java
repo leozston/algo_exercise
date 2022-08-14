@@ -39,6 +39,11 @@ public class AlgorithmExercise {
         String s = "(1+(4+5+2)-3)+(6+8)";
         int r = calculateV1_1(s);
 
+        List<Integer> l1 = new ArrayList<>();
+        l1.add(1);
+        l1.add(2);
+        l1.remove(1);
+        System.out.println(l1.size());
     }
 
     /**
