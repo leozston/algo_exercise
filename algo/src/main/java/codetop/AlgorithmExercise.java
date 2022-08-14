@@ -166,6 +166,19 @@ public class AlgorithmExercise {
      * TODO
      * */
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        PriorityQueue<Integer> queue1 = new PriorityQueue<Integer>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2 - o1;
+            }
+        });
+
+//        PriorityQueue<Integer> queue1 = new PriorityQueue<Integer>(new Comparator<Integer>() {
+//            @Override
+//            public int compare(Integer o1, Integer o2) {
+//                return 0;
+//            }
+//        })
         return 0;
     }
 
@@ -2872,9 +2885,25 @@ public class AlgorithmExercise {
     /**
      * leetcode 236
      * */
+    public static TreeNode lowestCommonAncestorVar = null;
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        return null;
+        lowestCommonAncestorVar = null;
+        lowestCommonAncestorImpl(root, p, q);
+        return lowestCommonAncestorVar;
     }
+    public boolean lowestCommonAncestorImpl(TreeNode node, TreeNode p, TreeNode q) {
+        if (node == null) {
+            return false;
+        }
+
+        boolean left = lowestCommonAncestorImpl(node.left, p, q);
+        boolean right = lowestCommonAncestorImpl(node.right, p, q);
+        if ((left && right) || ((left || right) && (node.val == p.val || node.val == q.val))) {
+            lowestCommonAncestorVar = node;
+        }
+        return (left || right || node.val == p.val || node.val == q.val);
+    }
+
 
 
     /**
@@ -3039,6 +3068,20 @@ public class AlgorithmExercise {
             res[i] = curMin;
         }
         return res[n];
+    }
+
+
+    /**
+     * leetcode 283
+     * */
+    public void moveZeroes(int[] nums) {
+        int low = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != 0) {
+                swap(nums, low + 1, i);
+                low++;
+            }
+        }
     }
 
 
